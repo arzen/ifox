@@ -11,5 +11,8 @@ public class MainActivity extends Activity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+        
+        //init
+        iFox.init(this, null, null);
     }
 }

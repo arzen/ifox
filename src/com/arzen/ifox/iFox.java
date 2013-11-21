@@ -1,9 +1,21 @@
 package com.arzen.ifox;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.arzen.utils.JarUtil;
+
+import dalvik.system.DexClassLoader;
 
 public abstract class iFox {
+	
+	static Activity act;
+	static DexClassLoader cl;
+	final static String dexFile = "iFoxLib.apk";
 
 	/**
 	 * 初始化
@@ -17,7 +29,23 @@ public abstract class iFox {
 	 * 
 	 */
 	public static void init(final Activity act, String appKey, String appSecrect) {
+		iFox.act = act;
 		
+		String jarPath = iFox.act.getCacheDir().getPath(); 
+		JarUtil jarUtil = new JarUtil(iFox.act); 
+		String msg = jarUtil.executeJarClass(jarPath, iFox.dexFile,"com.arzen.iFoxLib.DynamicTest", "helloWorld").toString();
+		Toast.makeText(act, msg, Toast.LENGTH_SHORT).show();
+		
+//		iFox.cl = loadDexFile(iFox.dexFile);
+//		Class libProviderClazz = null;
+//		try {
+//			libProviderClazz = cl.loadClass("com.dynamic.DynamicTest");
+//			IDynamic lib = (IDynamic)libProviderClazz.newInstance();
+//			Toast.makeText(act, lib.helloWorld(), Toast.LENGTH_SHORT).show();
+//		} catch (Exception e) {
+//			// TODO: handle exception
+//			e.printStackTrace();
+//		}
 	}
 	
 	/**
@@ -92,6 +120,17 @@ public abstract class iFox {
 		 */
 		public void onCancel();
 		
+	}
+	
+	private static DexClassLoader loadDexFile(String dexFile) {
+		String filePath = iFox.act.getAssets().toString()
+                + File.separator + dexFile;
+		Log.e("iFox",filePath);
+		final File optimizedDexOutputPath = new File(filePath);
+		
+        DexClassLoader cl = new DexClassLoader(optimizedDexOutputPath.getAbsolutePath(),
+        		iFox.act.getAssets().toString(), null, iFox.act.getClassLoader());
+		return cl; 
 	}
 	
 }
