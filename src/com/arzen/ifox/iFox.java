@@ -1,10 +1,7 @@
 package com.arzen.ifox;
 
-import java.io.File;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.arzen.utils.JarUtil;
@@ -28,13 +25,14 @@ public abstract class iFox {
 	 *            游戏的在平台中的app secrect
 	 * 
 	 */
-	public static void init(final Activity act, String appKey, String appSecrect) {
+	public static void init(final Activity activity, String appKey, String appSecrect) {
 		iFox.act = act;
 		
 		String jarPath = iFox.act.getCacheDir().getPath(); 
 		JarUtil jarUtil = new JarUtil(iFox.act); 
-		String msg = jarUtil.executeJarClass(jarPath, iFox.dexFile,"com.arzen.iFoxLib.DynamicTest", "helloWorld").toString();
-		Toast.makeText(act, msg, Toast.LENGTH_SHORT).show();
+//		String msg = jarUtil.executeJarClass(jarPath, iFox.dexFile,"com.arzen.iFoxLib.DynamicTest", "init").toString();
+		jarUtil.executeJarClass(jarPath, iFox.dexFile,"com.arzen.iFoxLib.DynamicTest", "init",act);
+		Toast.makeText(act, jarUtil.verCode, Toast.LENGTH_SHORT).show();
 		
 //		iFox.cl = loadDexFile(iFox.dexFile);
 //		Class libProviderClazz = null;
@@ -122,15 +120,5 @@ public abstract class iFox {
 		
 	}
 	
-	private static DexClassLoader loadDexFile(String dexFile) {
-		String filePath = iFox.act.getAssets().toString()
-                + File.separator + dexFile;
-		Log.e("iFox",filePath);
-		final File optimizedDexOutputPath = new File(filePath);
-		
-        DexClassLoader cl = new DexClassLoader(optimizedDexOutputPath.getAbsolutePath(),
-        		iFox.act.getAssets().toString(), null, iFox.act.getClassLoader());
-		return cl; 
-	}
 	
 }

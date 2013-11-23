@@ -5,12 +5,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
+import com.arzen.ifox.iFox;
+
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.util.Log;
 import dalvik.system.DexClassLoader;
 
 public class JarUtil {
-	private Context context;  
+	private Context context;
+	public String verCode=""; 
 
 	public JarUtil(Context context) {  
 	    this.context = context;  
@@ -86,7 +91,8 @@ public class JarUtil {
 	        DexClassLoader classLoader = new DexClassLoader(file.getPath(),  
 	                jarPath, null, ClassLoader.getSystemClassLoader()  
 	                        .getParent());  
-
+	        //get APK version code
+	        this.verCode = getApkVersionCode(file.getPath());
 	         // 可以在加载完的时候将生成在本地的.jar和.dex删除  
 	         file.delete();  
 	         file = new File(jarPath + "/"  
@@ -99,5 +105,16 @@ public class JarUtil {
 	         ex.printStackTrace();  
 	     }  
 	     return null;  
-	 }  
+	 }
+	
+	private String getApkVersionCode(String apkFile) {
+		String versionCode = "";
+		if (FileUtil.isFileExit(apkFile)) {
+			PackageManager pm = this.context.getPackageManager();
+			PackageInfo packageInfo = pm.getPackageArchiveInfo(apkFile, PackageManager.GET_ACTIVITIES);
+			versionCode = String.valueOf(packageInfo.versionCode);
+		}
+		return versionCode;
+	}
+	
 }
