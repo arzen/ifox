@@ -70,37 +70,21 @@ public abstract class iFox {
 		return mJarUtil;
 	}
 
-	/**
-	 * 加载lib 主页
-	 */
-	public static void loadHomePage(Activity activity) {
-		try {
-			Fragment f = (Fragment) activity.getClassLoader().loadClass(PKG_HOME_FRAGMENT).newInstance();
-			FragmentManager fm = activity.getFragmentManager();
-			FragmentTransaction ft = fm.beginTransaction();
-			ft.add(CONTAINER_ID, f);
-			ft.commit();
-			fm.executePendingTransactions();
-		} catch (Exception e) {
-			Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();
-		}
-		
+//	/**
+//	 * 加载lib 主页
+//	 */
+//	public static void loadHomePage(Activity activity) {
 //		try {
-//			Class<Fragment> clazz =  (Class<Fragment>) activity.getClassLoader().loadClass(PKG_HOME_FRAGMENT).newInstance();
-//			if (clazz != null) {
-//				Fragment homeFragment;
-//				try {
-//					homeFragment = clazz.newInstance();
-//					FragmentUtil.changeFragmentToContainer(iFox.mActivity, homeFragment, "home", false, false);
-//				} catch (Exception e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
+//			Fragment f = (Fragment) activity.getClassLoader().loadClass(PKG_HOME_FRAGMENT).newInstance();
+//			FragmentManager fm = activity.getFragmentManager();
+//			FragmentTransaction ft = fm.beginTransaction();
+//			ft.add(CONTAINER_ID, f);
+//			ft.commit();
+//			fm.executePendingTransactions();
 //		} catch (Exception e) {
-//			// TODO: handle exception
+//			Toast.makeText(activity, e.getMessage(), Toast.LENGTH_LONG).show();
 //		}
-	}
+//	}
 
 	/**
 	 * 打开登录界面

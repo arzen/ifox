@@ -16,6 +16,9 @@ import android.util.Log;
 import dalvik.system.DexClassLoader;
 
 public class JarUtil {
+
+	private static final String JARPATH = "";
+
 	private Context mContext;
 	public String mVertionCode = "";
 
@@ -66,24 +69,23 @@ public class JarUtil {
 	 */
 	public Class getClassObject(String jarName, String classPath) {
 		try {
-			ClassLoader classLoader = null;
 			if (mClassLoader == null) {
 				File file = writeIfoxLib(jarName);
 				File fo = getOptimizedDirectory();
 				// get APK version code
 				this.mVertionCode = getApkVersionCode(file.getAbsolutePath());
 				// 用DexClassLoader加载用dx.bat命令再编译过的jar包
-				classLoader = new DexClassLoader(file.getAbsolutePath(), fo.getAbsolutePath(), null, ClassLoader.getSystemClassLoader().getParent());
-				mClassLoader = classLoader;
-			} else {
-				classLoader = mClassLoader;
+				mClassLoader = new DexClassLoader(file.getAbsolutePath(), fo.getAbsolutePath(), null, ClassLoader.getSystemClassLoader().getParent());
+				// mClassLoader = classLoader;
+				
+				deleteDexFile(file);
 			}
 			// 可以在加载完的时候将生成在本地的.jar和.dex删除
 			// file.delete();
 			// file = new File(jarPath + "/" + jarName.substring(0,
 			// jarName.length() - 4) + ".dex");
 			// file.delete();
-			Class c = classLoader.loadClass(classPath);
+			Class c = mClassLoader.loadClass(classPath);
 			return c;
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -108,21 +110,20 @@ public class JarUtil {
 		}
 
 		f = new File(f, Integer.toHexString(jarName.hashCode()) + ".apk");
-		if (!f.exists()) {// 输出apk到 命名空间目录下
-			try {
-				InputStream ins = mContext.getAssets().open(jarName);
-				byte[] bytes = new byte[ins.available()];
-				ins.read(bytes);
-				ins.close();
 
-				FileOutputStream fos = new FileOutputStream(f);
-				fos.write(bytes);
-				fos.close();
+		try {// 输出apk到 命名空间目录下
+			InputStream ins = mContext.getAssets().open(jarName);
+			byte[] bytes = new byte[ins.available()];
+			ins.read(bytes);
+			ins.close();
 
-			} catch (Exception e) {
-				// TODO: handle exception
-				e.printStackTrace();
-			}
+			FileOutputStream fos = new FileOutputStream(f);
+			fos.write(bytes);
+			fos.close();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
 		}
 		return f;
 
@@ -209,8 +210,9 @@ public class JarUtil {
 			File f = writeIfoxLib(jarName);
 			File fo = getOptimizedDirectory();
 			// 得到
-			DexClassLoader dcl = new DexClassLoader(f.getAbsolutePath(), fo.getAbsolutePath(), null, ClassLoader.getSystemClassLoader().getParent());
-			mClassLoader = dcl;
+			if (mClassLoader == null)
+				mClassLoader = new DexClassLoader(f.getAbsolutePath(), fo.getAbsolutePath(), null, ClassLoader.getSystemClassLoader());
+			// mClassLoader = dcl;
 			try {
 				AssetManager am = (AssetManager) AssetManager.class.newInstance();
 				am.getClass().getMethod("addAssetPath", String.class).invoke(am, f.getAbsolutePath());
@@ -218,14 +220,27 @@ public class JarUtil {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-
-			Resources superRes = activity.getResources();
-
-			mResources = new Resources(mAssetManager, superRes.getDisplayMetrics(), superRes.getConfiguration());
-
-			mTheme = mResources.newTheme();
+			if (mResources == null) {
+				Resources superRes = activity.getResources();
+				mResources = new Resources(mAssetManager, superRes.getDisplayMetrics(), superRes.getConfiguration());
+			}
+			deleteDexFile(f);
+			// mTheme = mResources.newTheme();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 删除dex file
+	 */
+	public void deleteDexFile(File file) {
+		if (file != null && file.exists()) {
+			file.delete();
+			String path = file.getAbsolutePath();
+			File f = new File(path.substring(0, path.length() - 4) + ".dex");
+			if (f.exists())
+				file.delete();
 		}
 	}
 

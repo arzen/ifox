@@ -1,6 +1,7 @@
 package com.arzen.ifox;
 
 import com.arzen.utils.JarUtil;
+import com.arzen.utils.MsgUtil;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -33,7 +34,7 @@ public class PayActivity extends Activity {
 		mClassLoader = jarUtil.getmClassLoader();
 		mTheme = jarUtil.getmTheme();
 		mResources = jarUtil.getmResources();
-		mTheme.setTo(super.getTheme());
+//		mTheme.setTo(super.getTheme());
 
 		super.onCreate(savedInstanceState);
 
@@ -41,9 +42,15 @@ public class PayActivity extends Activity {
 		rootView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 		rootView.setId(iFox.CONTAINER_ID);
 		setContentView(rootView);
+		
+		
 
 		try {
 			Fragment f = (Fragment) getClassLoader().loadClass(iFox.PKG_PAY_FRAGMENT).newInstance();
+			if(f == null){
+				MsgUtil.msg("load fragment class is null!", this);
+				return;
+			}
 			FragmentManager fm = getFragmentManager();
 			FragmentTransaction ft = fm.beginTransaction();
 			ft.add(iFox.CONTAINER_ID, f);
@@ -64,10 +71,10 @@ public class PayActivity extends Activity {
 		return mResources == null ? super.getResources() : mResources;
 	}
 
-	@Override
-	public Theme getTheme() {
-		return mTheme == null ? super.getTheme() : mTheme;
-	}
+//	@Override
+//	public Theme getTheme() {
+//		return mTheme == null ? super.getTheme() : mTheme;
+//	}
 
 	@Override
 	public ClassLoader getClassLoader() {
