@@ -15,7 +15,7 @@ import android.content.res.Resources.Theme;
 import android.util.Log;
 import dalvik.system.DexClassLoader;
 
-@SuppressLint("NewApi") public class JarUtil {
+public class JarUtil {
 	private Context mContext;
 	public String mVertionCode = "";
 
@@ -83,7 +83,7 @@ import dalvik.system.DexClassLoader;
 			// file = new File(jarPath + "/" + jarName.substring(0,
 			// jarName.length() - 4) + ".dex");
 			// file.delete();
-			Class c = ((DexClassLoader)classLoader).loadClass(classPath);
+			Class c = classLoader.loadClass(classPath);
 			return c;
 		} catch (Exception ex) {
 			ex.printStackTrace();

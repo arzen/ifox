@@ -10,66 +10,52 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
 import android.os.Bundle;
+import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 import dalvik.system.DexClassLoader;
-
+/**
+ * 默认为游戏主界面测试
+ * @author Encore.liang
+ *
+ */
 public class MainActivity extends Activity {
 	
-	
-	private AssetManager mAssetManager;
-	private Resources mResources;
-	private Theme mTheme;
-	private ClassLoader mClassLoader;
-	
-	
+	private Button mBtnPay;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-
-		// init
-		JarUtil jarUtil = iFox.init(this, null, null);
-		mAssetManager = jarUtil.getmAssetManager();
-		mClassLoader = jarUtil.getmClassLoader();
-		mTheme = jarUtil.getmTheme();
-		mResources = jarUtil.getmResources();
-		mTheme.setTo(super.getTheme());
-
 		super.onCreate(savedInstanceState);
-
-		FrameLayout rootView = new FrameLayout(this);
-		rootView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-		rootView.setId(iFox.CONTAINER_ID);
-		setContentView(rootView);
+		setContentView(R.layout.main);
 		
+		mBtnPay = (Button) findViewById(R.id.btnPay);
+		mBtnPay.setOnClickListener(mOnClickListener);
 
-		//加载主页
-		iFox.loadHomePage(this);
+		iFox.init(this, null, null);
 	}
 	
-	
-	@Override
-	public AssetManager getAssets() {
-		return mAssetManager == null ? super.getAssets() : mAssetManager;
-	}
+	public OnClickListener mOnClickListener = new OnClickListener() {
+		
+		@Override
+		public void onClick(View arg0) {
+			// TODO Auto-generated method stub
+			switch (arg0.getId()) {
+			case R.id.btnPay:
+				iFox.chargePage(MainActivity.this, null, null);
+				break;
 
-	@Override
-	public Resources getResources() {
-		return mResources == null ? super.getResources() : mResources;
-	}
-
-	@Override
-	public Theme getTheme() {
-		return mTheme == null ? super.getTheme() : mTheme;
-	}
-
-	@Override
-	public ClassLoader getClassLoader() {
-		return mClassLoader == null ? super.getClassLoader() : mClassLoader;
-	}
+			default:
+				break;
+			}
+		}
+	};
 }

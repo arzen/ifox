@@ -4,12 +4,11 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import com.arzen.utils.JarUtil;
-
-import dalvik.system.DexClassLoader;
 
 public abstract class iFox {
 	/**
@@ -20,12 +19,17 @@ public abstract class iFox {
 	 * home fragment pkg
 	 */
 	public static final String PKG_HOME_FRAGMENT = "com.arzen.iFoxLib.fragment.HomeFragment";
+	
+	public static final String PKG_PAY_FRAGMENT = "com.arzen.iFoxLib.fragment.PayFragment";
 
 	public static Activity mActivity;
+	
 	public final static String dexFile = "iFoxLib.apk";
+	
+	private static JarUtil mJarUtil;
 
 	/**
-	 * 初始化,必须在setContentView前执行
+	 * 初始化
 	 * 
 	 * @param Activity
 	 *            游戏的的主Activity
@@ -35,7 +39,7 @@ public abstract class iFox {
 	 *            游戏的在平台中的app secrect
 	 * 
 	 */
-	public static JarUtil init(final Activity activity, String appKey, String appSecrect) {
+	public static void init(final Activity activity, String appKey, String appSecrect) {
 		iFox.mActivity = activity;
 
 		JarUtil jarUtil = new JarUtil(iFox.mActivity);
@@ -45,7 +49,25 @@ public abstract class iFox {
 //		String classPath = "com.arzen.iFoxLib.DynamicTest";
 //		String returnString = (String) jarUtil.executeJarClass(iFox.dexFile, classPath, "helloWorld", 
 //				new Class[] { }, new Object[]{});
-		return jarUtil;
+//		return jarUtil;
+	}
+	
+	/**
+	 * 初始化动态更新包资源 必须在setContentView前执行
+	 * @return
+	 */
+	public static JarUtil initLibApkResource()
+	{
+		if(iFox.mActivity == null){
+			return null;
+		}
+		if(mJarUtil == null)
+			mJarUtil = new JarUtil(iFox.mActivity);
+		
+		// 初始化lib资源,导入资源,以便做到调用,lib apk 动态加载view
+		mJarUtil.initIFoxLibResource(mActivity, iFox.dexFile);
+		
+		return mJarUtil;
 	}
 
 	/**
@@ -125,7 +147,8 @@ public abstract class iFox {
 	 */
 
 	public static void chargePage(final Activity activity, final Bundle bundle, final ChargeListener listener) {
-
+		Intent intent = new Intent(activity,PayActivity.class);
+		activity.startActivity(intent);
 	}
 
 	public static interface ChargeListener {

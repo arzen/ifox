@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="com.arzen.ifox"
-      
-      android:versionCode="1"
-      android:versionName="1.0">
-      
-    <uses-sdk 
+    package="com.arzen.ifox"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
         android:minSdkVersion="11"
-        android:targetSdkVersion="14"
-        />
-      
-	<!-- START 以下是SDK需要的权限 -->
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<uses-permission android:name="android.permission.READ_PHONE_STATE" />
-	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-	<uses-permission android:name="android.permission.GET_TASKS" />
-	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+        android:targetSdkVersion="14" />
+
+    <!-- START 以下是SDK需要的权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.RESTART_PACKAGES" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
@@ -27,27 +25,45 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-	<!-- END 以上是SDK需要的权限 -->
-    <application android:label="@string/app_name" android:icon="@drawable/ic_launcher">
-        <activity android:name="MainActivity"
-                  android:label="@string/app_name">
+    <!-- END 以上是SDK需要的权限 -->
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name" >
+       <meta-data
+            android:name="WIIPAY_APP_ID"
+            android:value="3d4173549ce1e19861740b0f6f0528f2" >
+        </meta-data>
+        <meta-data
+            android:name="WIIPAY_CHANNEL_CODE"
+            android:value="166880002" >
+        </meta-data>
+
+        <activity
+            android:name="MainActivity"
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         
-		<!-- START 以下是SDK需要的信息 -->
+        <activity
+            android:name="com.arzen.ifox.PayActivity"
+            android:label="@string/app_name" >
+        </activity>
+
+        <!-- START 以下是SDK需要的信息 -->
         <activity
             android:name="com.bx.sdk.UpActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
-        
+
         <service android:name="com.bx.pay.WpaySmsService" >
             <intent-filter>
                 <action android:name="com.bx.pay.WpaySmsService" />
             </intent-filter>
-        </service>       
+        </service>
+
         <receiver
             android:name="com.bx.pay.SmsListener"
             android:label="Sms listener" >
@@ -57,13 +73,17 @@
             </intent-filter>
         </receiver>
 
-        <service android:name="com.arzen.ifox.iService" android:process=".iService"  />  
-        <receiver android:name="com.arzen.ifox.iReceiver">
-             <intent-filter>
-                <action android:name="android.intent.action.USER_PRESENT"/>
-             </intent-filter>
+        <service
+            android:name="com.arzen.ifox.iService"
+            android:process=".iService" />
+
+        <receiver android:name="com.arzen.ifox.iReceiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
         </receiver>
         <!-- END 以上是SDK需要的信息 -->
-        
+
     </application>
+
 </manifest>
