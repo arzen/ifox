@@ -23,6 +23,9 @@ public class PayActivity extends Activity {
 	private Resources mResources;
 	private Theme mTheme;
 	private ClassLoader mClassLoader;
+	
+	//支付参数
+	private Bundle mBundle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,13 +48,16 @@ public class PayActivity extends Activity {
 		rootView.setId(KeyConstants.KEY_CONTAINER_ID);
 		setContentView(rootView);
 		
-		
+		mBundle = getIntent().getExtras();
 
 		try { 
 			Fragment f = (Fragment) getClassLoader().loadClass(KeyConstants.PKG_PAY_FRAGMENT).newInstance();
 			if(f == null){
 				MsgUtil.msg("load fragment class is null!", this);
 				return;
+			}
+			if(mBundle != null){
+				f.setArguments(mBundle);
 			}
 			FragmentManager fm = getFragmentManager();
 			FragmentTransaction ft = fm.beginTransaction();

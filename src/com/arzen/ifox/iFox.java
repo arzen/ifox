@@ -7,6 +7,7 @@ import android.os.Bundle;
 import com.arzen.ifox.api.HttpIfoxApi;
 import com.arzen.ifox.api.HttpSetting;
 import com.arzen.ifox.bean.Init;
+import com.arzen.ifox.setting.KeyConstants;
 import com.arzen.ifox.utils.CommonUtil;
 import com.arzen.ifox.utils.JarUtil;
 import com.arzen.ifox.utils.MsgUtil;
@@ -82,7 +83,7 @@ public abstract class iFox {
 		});
 		
 		// 初始化dex resource资源
-		initDexResource(activity);
+//		initDexResource(activity);
 	}
 
 	/**
@@ -157,8 +158,16 @@ public abstract class iFox {
 	 * 
 	 */
 
-	public static void chargePage(final Activity activity, final Bundle bundle, final ChargeListener listener) {
+	public static void chargePage(final Activity activity, Bundle bundle, final ChargeListener listener) {
 		Intent intent = new Intent(activity, PayActivity.class);
+		
+		if(bundle == null){
+			bundle = new Bundle();
+		}
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, GID); //游戏id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); //渠道id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, "token"); //token
+		intent.putExtras(bundle);
 		activity.startActivity(intent);
 	}
 

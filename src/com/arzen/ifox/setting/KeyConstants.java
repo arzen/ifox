@@ -22,4 +22,20 @@ public class KeyConstants {
 	 * lib apk httpSetting 类
 	 */
 	public static String CLASSPATH_HTTP_SETTING = "com.arzen.iFoxLib.api.HttpSetting";
+	
+
+	/**
+	 * intent 传递数据key ->gid游戏id
+	 */
+	public static String INTENT_DATA_KEY_GID = "gid";
+	
+	/**
+	 * intent 传递数据key ->cid 渠道id
+	 */
+	public static String INTENT_DATA_KEY_CID = "cid";
+	
+	/**
+	 * intent 传递数据key ->登录后的token
+	 */
+	public static String INTENT_DATA_KEY_TOKEN = "token";
 }
