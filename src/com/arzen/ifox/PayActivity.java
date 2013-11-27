@@ -1,8 +1,6 @@
 package com.arzen.ifox;
 
-import com.arzen.utils.JarUtil;
-import com.arzen.utils.MsgUtil;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -15,6 +13,10 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.arzen.ifox.setting.KeyConstants;
+import com.arzen.ifox.utils.JarUtil;
+import com.arzen.ifox.utils.MsgUtil;
+
 public class PayActivity extends Activity {
 
 	private AssetManager mAssetManager;
@@ -25,7 +27,7 @@ public class PayActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// init
-		JarUtil jarUtil = iFox.initLibApkResource();
+		JarUtil jarUtil = iFox.initLibApkResource(this);
 		if (jarUtil == null) { // 未初始化退出
 			finish();
 			return;
@@ -40,20 +42,20 @@ public class PayActivity extends Activity {
 
 		FrameLayout rootView = new FrameLayout(this);
 		rootView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-		rootView.setId(iFox.CONTAINER_ID);
+		rootView.setId(KeyConstants.KEY_CONTAINER_ID);
 		setContentView(rootView);
 		
 		
 
-		try {
-			Fragment f = (Fragment) getClassLoader().loadClass(iFox.PKG_PAY_FRAGMENT).newInstance();
+		try { 
+			Fragment f = (Fragment) getClassLoader().loadClass(KeyConstants.PKG_PAY_FRAGMENT).newInstance();
 			if(f == null){
 				MsgUtil.msg("load fragment class is null!", this);
 				return;
 			}
 			FragmentManager fm = getFragmentManager();
 			FragmentTransaction ft = fm.beginTransaction();
-			ft.add(iFox.CONTAINER_ID, f);
+			ft.add(KeyConstants.KEY_CONTAINER_ID, f);
 			ft.commit();
 			fm.executePendingTransactions();
 		} catch (Exception e) {
