@@ -45,10 +45,10 @@ public class JarUtil {
 	 *            要执行的方法所带的参数
 	 * @return 执行完方法的返回值
 	 */
-	public Object executeJarClass(String jarName, String classPath, String methodName, Class[] argsClass, Object[] args) {
+	public Object executeJarClass(Activity activity,String jarName, String classPath, String methodName, Class[] argsClass, Object[] args) {
 		Log.e("-----------", "executeJarClass()_start");
 		Object ret = null;
-		Class<?> c = getClassObject(jarName, classPath);
+		Class<?> c = getClassObject(activity,jarName, classPath);
 		try {
 			ret = c.getMethod(methodName, argsClass).invoke(c.newInstance(), args);
 		} catch (Exception ex) {
@@ -67,10 +67,10 @@ public class JarUtil {
 	 *            class在jar包的路径
 	 * @return 要加载的class对象
 	 */
-	public Class getClassObject(String jarName, String classPath) {
+	public Class getClassObject(Activity activity,String jarName, String classPath) {
 		try {
 			if (mClassLoader == null) {
-				File file = writeIfoxLib(jarName);
+				File file = writeIfoxLib(activity,jarName);
 				File fo = getOptimizedDirectory();
 				// get APK version code
 				this.mVertionCode = getApkVersionCode(file.getAbsolutePath());
@@ -100,11 +100,11 @@ public class JarUtil {
 	 * @param jarName
 	 * @return
 	 */
-	public File writeIfoxLib(String jarName) {
+	public File writeIfoxLib(Activity activity,String jarName) {
 		if (jarName == null || jarName.equals(""))
 			return null;
 
-		File f = new File(mContext.getFilesDir(), "dex");
+		File f = new File(activity.getFilesDir(), "dex");
 		if (!f.exists()) {
 			f.mkdir();
 		}
@@ -112,7 +112,7 @@ public class JarUtil {
 		f = new File(f, Integer.toHexString(jarName.hashCode()) + ".apk");
 
 		try {// 输出apk到 命名空间目录下
-			InputStream ins = mContext.getAssets().open(jarName);
+			InputStream ins = activity.getAssets().open(jarName);
 			byte[] bytes = new byte[ins.available()];
 			ins.read(bytes);
 			ins.close();
@@ -207,7 +207,7 @@ public class JarUtil {
 	public void initIFoxLibResource(Activity activity, String jarName) {
 		try {
 			// 获取本地dex apk file
-			File f = writeIfoxLib(jarName);
+			File f = writeIfoxLib(activity,jarName);
 			File fo = getOptimizedDirectory();
 			// 得到
 			if (mClassLoader == null)

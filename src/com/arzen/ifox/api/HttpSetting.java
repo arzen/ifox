@@ -34,9 +34,10 @@ public class HttpSetting {
 			Object result = null;
 			if(jarUtil == null){
 				jarUtil = new JarUtil(activity);
+				iFox.setJarUtil(jarUtil);
 			}
 			 //获取服务器地址
-			result = jarUtil.executeJarClass(iFox.DEX_FILE, KeyConstants.CLASSPATH_HTTP_SETTING, "getIFoxInitUrl", new Class[]{}, new Object[]{});
+			result = jarUtil.executeJarClass(activity,iFox.DEX_FILE, KeyConstants.CLASSPATH_HTTP_SETTING, "getIFoxInitUrl", new Class[]{}, new Object[]{});
 			if(result != null && result instanceof String){
 				IFOX_INIT  = (String) result;
 			}

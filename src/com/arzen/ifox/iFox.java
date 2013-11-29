@@ -1,6 +1,10 @@
 ﻿package com.arzen.ifox;
 
+import org.w3c.dom.ls.LSException;
+
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -54,9 +58,9 @@ public abstract class iFox {
 			public void onResponse(final String url, final int state, final Object result, final int type) {
 				// TODO Auto-generated method stub
 				// 请求成功
-				if(activity != null){
+				if (activity != null) {
 					activity.runOnUiThread(new Runnable() {
-						
+
 						@Override
 						public void run() {
 							// TODO Auto-generated method stub
@@ -81,9 +85,9 @@ public abstract class iFox {
 				}
 			}
 		});
-		
+
 		// 初始化dex resource资源
-//		initDexResource(activity);
+		// initDexResource(activity);
 	}
 
 	/**
@@ -146,6 +150,8 @@ public abstract class iFox {
 
 	}
 
+	
+
 	/**
 	 * 打开支付界面
 	 * 
@@ -159,14 +165,25 @@ public abstract class iFox {
 	 */
 
 	public static void chargePage(final Activity activity, Bundle bundle, final ChargeListener listener) {
-		Intent intent = new Intent(activity, PayActivity.class);
+		if (activity == null || listener == null) {
+			try {
+				throw new Exception("context and listener is null!");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		}
+		//设置支付回调接口
+		PayActivity.setPayCallBackListener(listener);
 		
-		if(bundle == null){
+		Intent intent = new Intent(activity, PayActivity.class);
+		if (bundle == null) {
 			bundle = new Bundle();
 		}
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, GID); //游戏id
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); //渠道id
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, "token"); //token
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, GID); // 游戏id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); // 渠道id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, "token"); // token
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
 	}
@@ -183,7 +200,7 @@ public abstract class iFox {
 		/**
 		 * 支付失败
 		 */
-		public void onFail();
+		public void onFail(String msg);
 
 		/**
 		 * 支付完成
@@ -204,5 +221,10 @@ public abstract class iFox {
 	 */
 	public static JarUtil getJarUtil() {
 		return mJarUtil;
+	}
+	
+	public static void setJarUtil(JarUtil jarUtil)
+	{
+		mJarUtil = jarUtil;
 	}
 }
