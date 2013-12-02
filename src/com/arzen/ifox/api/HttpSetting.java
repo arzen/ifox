@@ -4,7 +4,7 @@ import android.app.Activity;
 
 import com.arzen.ifox.iFox;
 import com.arzen.ifox.setting.KeyConstants;
-import com.arzen.ifox.utils.JarUtil;
+import com.arzen.ifox.utils.DynamicLibManager;
 
 /**
  * http 设置类
@@ -21,6 +21,10 @@ public class HttpSetting {
 	 * ifox init url
 	 */
 	private static  String IFOX_INIT = null;
+	/**
+	 * ifox update url
+	 */
+	private static String IFOX_UPDATE_URL = null;
 	
 	/**
 	 * 获取ifox init request url
@@ -30,10 +34,10 @@ public class HttpSetting {
 	public static String getInitUrl(Activity activity)
 	{
 		if(IFOX_INIT == null || IFOX_INIT.equals("")){
-			JarUtil jarUtil = iFox.getJarUtil();
+			DynamicLibManager jarUtil = iFox.getJarUtil();
 			Object result = null;
 			if(jarUtil == null){
-				jarUtil = new JarUtil(activity);
+				jarUtil = new DynamicLibManager(activity);
 				iFox.setJarUtil(jarUtil);
 			}
 			 //获取服务器地址
@@ -43,6 +47,29 @@ public class HttpSetting {
 			}
 		}
 		return IFOX_INIT;
+	}
+	
+	/**
+	 * 获取ifox 动态库更新url
+	 * @param activity
+	 * @return
+	 */
+	public static String getDynamicUpdateUrl(Activity activity)
+	{
+		if(IFOX_UPDATE_URL == null || IFOX_UPDATE_URL.equals("")){
+			DynamicLibManager jarUtil = iFox.getJarUtil();
+			Object result = null;
+			if(jarUtil == null){
+				jarUtil = new DynamicLibManager(activity);
+				iFox.setJarUtil(jarUtil);
+			}
+			 //获取服务器地址
+			result = jarUtil.executeJarClass(activity,iFox.DEX_FILE, KeyConstants.CLASSPATH_HTTP_SETTING, "getDynamicUpdateUrl", new Class[]{}, new Object[]{});
+			if(result != null && result instanceof String){
+				IFOX_UPDATE_URL  = (String) result;
+			}
+		}
+		return IFOX_UPDATE_URL;
 	}
 
 //	private static String SERVER_URL = "";

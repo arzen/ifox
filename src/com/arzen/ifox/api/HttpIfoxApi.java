@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.arzen.ifox.bean.DynamicUpdate;
 import com.arzen.ifox.bean.Init;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
@@ -35,6 +36,19 @@ public class HttpIfoxApi {
 	 * 参数package
 	 */
 	public static final String PARAM_PACKAGE = "package";
+	/**
+	 * 参数游戏id
+	 */
+	public static final String PARAM_GID = "gid";
+	/**
+	 * 参数渠道id
+	 */
+	public static final String PARAM_CID = "cid";
+	/**
+	 * 参数版本号
+	 */
+	public static final String PARAM_VER = "ver";
+	
 
 	/**
 	 * 请求初始化信息,当前请求必须成功,如果返回失败,则没必要继续进行下一步工作
@@ -58,6 +72,30 @@ public class HttpIfoxApi {
 			Request request = new Request();
 			request.setUrl(url);
 			request.setParser(new JsonParser(Init.class));
+			request.setOnRequestListener(onRequestListener);
+			HttpConnectManager.getInstance(activity.getApplicationContext()).doPost(request,postParam);
+		}
+	}
+	/**
+	 * 请求动态库更新内容
+	 * @param activity
+	 * @param gid 游戏id
+	 * @param cid 渠道id
+	 * @param version 当前动态库的版本号
+	 */
+	public static void requestDynamicUpdateData(Activity activity, String gid, String cid, String version,OnRequestListener onRequestListener) {
+		String url = HttpSetting.getDynamicUpdateUrl(activity);
+		if (checkUrlIsCorrect(url)) {
+			Map<String, Object> maps = new HashMap<String, Object>();
+			maps.put(PARAM_GID,gid);
+			maps.put(PARAM_CID, cid);
+			maps.put(PARAM_VER, version);
+			
+			String postParam = createParams(maps);
+			
+			Request request = new Request();
+			request.setUrl(url);
+			request.setParser(new JsonParser(DynamicUpdate.class));
 			request.setOnRequestListener(onRequestListener);
 			HttpConnectManager.getInstance(activity.getApplicationContext()).doPost(request,postParam);
 		}

@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.arzen.ifox.iFox.ChargeListener;
 import com.arzen.ifox.setting.KeyConstants;
-import com.arzen.ifox.utils.JarUtil;
+import com.arzen.ifox.utils.DynamicLibManager;
 import com.arzen.ifox.utils.MsgUtil;
 import com.encore.libs.utils.Log;
 
@@ -63,7 +63,7 @@ public class PayActivity extends Activity {
 	 */
 	public void initResources() {
 		// init
-		JarUtil jarUtil = iFox.initLibApkResource(this);
+		DynamicLibManager jarUtil = iFox.initLibApkResource(this);
 		if (jarUtil == null) { // 未初始化退出
 			finish();
 			return;
@@ -79,7 +79,9 @@ public class PayActivity extends Activity {
 	 */
 	public void showPayFragment() {
 		try {
-			Fragment f = (Fragment) getClassLoader().loadClass(KeyConstants.PKG_PAY_FRAGMENT).newInstance();
+			
+			
+			Fragment f  = (Fragment) getClassLoader().loadClass(KeyConstants.PKG_PAY_FRAGMENT).newInstance();
 			if (f == null) {
 				MsgUtil.msg("load fragment class is null!", this);
 				return;
@@ -89,7 +91,7 @@ public class PayActivity extends Activity {
 			}
 			FragmentManager fm = getFragmentManager();
 			FragmentTransaction ft = fm.beginTransaction();
-			ft.add(KeyConstants.KEY_CONTAINER_ID, f);
+			ft.replace(KeyConstants.KEY_CONTAINER_ID, f,TAG);
 			ft.commit();
 			fm.executePendingTransactions();
 		} catch (Exception e) {
@@ -156,10 +158,10 @@ public class PayActivity extends Activity {
 				Bundle bundle = intent.getExtras();
 				String result = bundle.getString(KeyConstants.INTENT_KEY_PAY_RESULT);
 				String msg = bundle.getString(KeyConstants.INTENT_KEY_PAY_MSG);
-				
+
 				Log.d(TAG, "mPayResultReceiver (result:" + result + " msg:" + msg + ")");
-				
-				if(result == null){
+
+				if (result == null) {
 					return;
 				}
 
@@ -170,7 +172,7 @@ public class PayActivity extends Activity {
 				} else if (result.equals(KeyConstants.INTENT_KEY_PAY_CANCEL)) {
 					mChargeListener.onCancel();
 				}
-				//退出
+				// 退出
 				finish();
 				mChargeListener = null;
 			}

@@ -7,13 +7,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.arzen.ifox.api.HttpIfoxApi;
 import com.arzen.ifox.api.HttpSetting;
+import com.arzen.ifox.bean.DynamicUpdate;
+import com.arzen.ifox.bean.DynamicUpdate.DynamicData;
 import com.arzen.ifox.bean.Init;
 import com.arzen.ifox.setting.KeyConstants;
 import com.arzen.ifox.utils.CommonUtil;
-import com.arzen.ifox.utils.JarUtil;
+import com.arzen.ifox.utils.DynamicLibUtils;
+import com.arzen.ifox.utils.DynamicLibManager;
 import com.arzen.ifox.utils.MsgUtil;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
@@ -21,13 +25,20 @@ import com.encore.libs.utils.NetWorkUtils;
 
 public abstract class iFox {
 
+	private static final String TAG = "IFox";
+	
 	public final static String DEX_FILE = "iFoxLib.apk";
 	/**
 	 * 当前游戏id
 	 */
 	public static String GID = "";
-
-	private static JarUtil mJarUtil;
+	/**
+	 * 动态库操作类
+	 */
+	private static DynamicLibManager mJarUtil;
+	//是否初始化成功
+	private static boolean isInitSuccess = false;
+	
 
 	/**
 	 * 初始化
@@ -44,12 +55,20 @@ public abstract class iFox {
 		if (activity == null) {
 			return;
 		}
-		boolean isHasNetWork = NetWorkUtils.isWifiConnected(activity.getApplicationContext());
+		boolean isHasNetWork = NetWorkUtils.isNetworkAvailable(activity.getApplicationContext());
 		if (!isHasNetWork) { // 没有网络
 			MsgUtil.msg(R.string.not_network, activity);
 			return;
 		}
-
+		//初始化应用信息,此步不同下面工作就无法进行
+		initAppInfo(activity, appKey, appSecrect);
+	}
+	
+	/**
+	 * 初始化应用信息
+	 */
+	private static void initAppInfo(final Activity activity, String appKey, String appSecrect)
+	{
 		String packageName = CommonUtil.getPackageName(activity.getApplicationContext());
 		// 请求初始化信息
 		HttpIfoxApi.requestInitData(activity, packageName, appKey, appSecrect, new OnRequestListener() {
@@ -72,6 +91,12 @@ public abstract class iFox {
 									initDexResource(activity);
 									// 设置当前游戏id
 									GID = init.getData().getGid();
+									
+									if(mJarUtil != null){
+										//检查动态库是否有更新
+										checkUpdate(activity,GID, "cid", mJarUtil.getmVertionCode());
+									}
+									
 								} else {
 									MsgUtil.msg(init.getMsg(), activity);
 								}
@@ -85,9 +110,42 @@ public abstract class iFox {
 				}
 			}
 		});
-
-		// 初始化dex resource资源
-		// initDexResource(activity);
+	}
+	
+	/**
+	 * 检查动态库是否有更新
+	 * 如果有更新,并在wifi网络下,自动下载动态库
+	 * @param gid 游戏id
+	 * @param cid 渠道id
+	 * @param currentVertion 当前包下的版本号
+	 */
+	public static void checkUpdate(final Activity activity,String gid,String cid,String currentVersion)
+	{
+		Log.d(TAG, "start check update!");
+		HttpIfoxApi.requestDynamicUpdateData(activity, gid, cid, currentVersion, new OnRequestListener() {
+			
+			@Override
+			public void onResponse(final String url, final int state, final Object result, final int type) {
+				// TODO Auto-generated method stub
+				if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof DynamicUpdate) {
+					DynamicUpdate dynamicUpdate = (DynamicUpdate) result;
+					// 如果返回成功
+					if (dynamicUpdate.getCode() == HttpSetting.RESULT_CODE_OK) {
+						DynamicData data = dynamicUpdate.getData();
+						String latest =  data.getLatest();
+						if(latest.equals("false") && !data.getUrl().equals("")){ //false 有新版本  true 没新版本
+							DynamicLibUtils.downloadNewDynamicLib(activity.getApplicationContext(),data.getUrl()); //下载动态库
+						}
+					} else {
+						MsgUtil.msg(dynamicUpdate.getMsg(), activity);
+					}
+				} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
+					Log.d(TAG, "check update time out");
+				} else { // 请求失败
+					Log.d(TAG, "check update fail");
+				}
+			}
+		});
 	}
 
 	/**
@@ -95,7 +153,7 @@ public abstract class iFox {
 	 */
 	private static void initDexResource(Activity activity) {
 		if (mJarUtil == null)
-			mJarUtil = new JarUtil(activity);
+			mJarUtil = new DynamicLibManager(activity);
 		// 初始化lib资源,导入资源,以便做到调用,lib apk 动态加载view
 		mJarUtil.initIFoxLibResource(activity, iFox.DEX_FILE);
 	}
@@ -105,12 +163,12 @@ public abstract class iFox {
 	 * 
 	 * @return
 	 */
-	public static JarUtil initLibApkResource(Activity activity) {
+	public static DynamicLibManager initLibApkResource(Activity activity) {
 		if (activity == null) {
 			return null;
 		}
 		if (mJarUtil == null)
-			mJarUtil = new JarUtil(activity);
+			mJarUtil = new DynamicLibManager(activity);
 
 		// 初始化lib资源,导入资源,以便做到调用,lib apk 动态加载view
 		mJarUtil.initIFoxLibResource(activity, iFox.DEX_FILE);
@@ -219,11 +277,11 @@ public abstract class iFox {
 	 * 
 	 * @return
 	 */
-	public static JarUtil getJarUtil() {
+	public static DynamicLibManager getJarUtil() {
 		return mJarUtil;
 	}
 	
-	public static void setJarUtil(JarUtil jarUtil)
+	public static void setJarUtil(DynamicLibManager jarUtil)
 	{
 		mJarUtil = jarUtil;
 	}
