@@ -56,7 +56,7 @@ public class DynamicLibUtils {
 		}
 		
 //		downloadUrl = "http://101.199.109.89/wsdl35.yunpan.cn/share.php?method=Share.download&fhash=dbd866ce7748ebe00331d420e2a02fd67ffe4475&xqid=282875528&fname=iFoxLib.apk&fsize=1962686&nid=13859665053993982&cqid=c3032dc23be3304e81d31956406904bb&st=d1ded37a0faf6067a92da11e45084caf&e=1386139357&dt=35.d31f20a51877bff73830105e8dc766f3";
-//		downloadUrl = "";
+		downloadUrl = "";
 		//当前是wifi环境,并且url等不能为空
 		if (NetWorkUtils.isWifiConnected(context) 
 				&& downloadUrl != null && !downloadUrl.equals("") 

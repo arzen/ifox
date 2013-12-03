@@ -16,6 +16,16 @@ public class KeyConstants {
 	 */
 	public static final String PKG_PAY_FRAGMENT = "com.arzen.iFoxLib.fragment.PayFragment";
 	/**
+	 * 登录页面
+	 */
+	public static final String PKG_LOGIN_FRAGMENT = "com.arzen.iFoxLib.fragment.LoginFragment";
+	
+	/**
+	 * 动态加载fragment key
+	 */
+	public static final String KEY_PACKAGE_NAME = "keyPackage";
+	
+	/**
 	 * fragment 容器id
 	 */
 	public static int KEY_CONTAINER_ID = android.R.id.primary;

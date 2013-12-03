@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.arzen.ifox.R.layout;
 import com.arzen.ifox.iFox.ChargeListener;
+import com.arzen.ifox.iFox.LoginListener;
 import com.arzen.ifox.setting.KeyConstants;
 import com.arzen.ifox.utils.MsgUtil;
 /**
@@ -18,6 +18,7 @@ import com.arzen.ifox.utils.MsgUtil;
 public class MainActivity extends Activity {
 	
 	private Button mBtnPay;
+	private Button mBtnLogin;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -27,8 +28,13 @@ public class MainActivity extends Activity {
 		
 		mBtnPay = (Button) findViewById(R.id.btnPay);
 		mBtnPay.setOnClickListener(mOnClickListener);
+		
+		mBtnLogin = (Button) findViewById(R.id.btnLogin);
+		mBtnLogin.setOnClickListener(mOnClickListener);
 
 		iFox.init(this, null, null);
+		
+		
 	}
 	
 	public OnClickListener mOnClickListener = new OnClickListener() {
@@ -74,7 +80,22 @@ public class MainActivity extends Activity {
 					}
 				});
 				break;
-
+			case R.id.btnLogin:
+				iFox.loginPage(MainActivity.this, null, new LoginListener() {
+					
+					@Override
+					public void onSuccess(Bundle bundle) {
+						// TODO Auto-generated method stub
+						MsgUtil.msg("login onSuccess()", MainActivity.this);
+					}
+					
+					@Override
+					public void onCancel() {
+						// TODO Auto-generated method stub
+						MsgUtil.msg("login onCancel()", MainActivity.this);
+					}
+				});
+				break;
 			default:
 				break;
 			}

@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
 import android.os.Bundle;
@@ -27,7 +26,7 @@ import com.encore.libs.utils.Log;
 
 import dalvik.system.DexClassLoader;
 
-public class PayActivity extends Activity {
+public class LoginActivity extends Activity {
 
 	public final String TAG = "PayActivity";
 
@@ -36,12 +35,8 @@ public class PayActivity extends Activity {
 	private Theme mTheme;
 	private DexClassLoader mClassLoader;
 
-	// 支付参数
+	// 登录参数
 	private Bundle mBundle;
-	/**
-	 * 支付回调接口
-	 */
-	public static ChargeListener mChargeListener;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +46,6 @@ public class PayActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
-		if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			Log.d(TAG, "横屏");
-		} else if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-			Log.d(TAG, "竖屏");
-		}
 
 		FrameLayout rootView = new FrameLayout(this);
 		rootView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -64,9 +53,9 @@ public class PayActivity extends Activity {
 		setContentView(rootView);
 		mBundle = getIntent().getExtras();
 		// 显示支付页
-		showPayFragment();
-		// 注册支付广播
-		registerReceiver(mPayResultReceiver, new IntentFilter(KeyConstants.PAY_RESULT_RECEIVER_ACTION));
+		showLoginFragment();
+//		 注册支付广播
+//		registerReceiver(mPayResultReceiver, new IntentFilter(KeyConstants.PAY_RESULT_RECEIVER_ACTION));
 	}
 
 	/**
@@ -91,9 +80,10 @@ public class PayActivity extends Activity {
 	/**
 	 * 显示支付页面
 	 */
-	public void showPayFragment() {
+	public void showLoginFragment() {
 		try {
-			Fragment f = (Fragment) getClassLoader().loadClass(KeyConstants.PKG_PAY_FRAGMENT).newInstance();
+
+			Fragment f = (Fragment) getClassLoader().loadClass(KeyConstants.PKG_LOGIN_FRAGMENT).newInstance();
 			if (f == null) {
 				MsgUtil.msg("load fragment class is null!", this);
 				return;
@@ -115,12 +105,12 @@ public class PayActivity extends Activity {
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			Intent intent = new Intent(KeyConstants.PAY_RESULT_RECEIVER_ACTION);
-			Bundle bundle = new Bundle();
-			bundle.putString(KeyConstants.INTENT_KEY_PAY_RESULT, KeyConstants.INTENT_KEY_PAY_CANCEL);
-			intent.putExtras(bundle);
-			sendBroadcast(intent);
-			return false;
+//			Intent intent = new Intent(KeyConstants.PAY_RESULT_RECEIVER_ACTION);
+//			Bundle bundle = new Bundle();
+//			bundle.putString(KeyConstants.INTENT_KEY_PAY_RESULT, KeyConstants.INTENT_KEY_PAY_CANCEL);
+//			intent.putExtras(bundle);
+//			sendBroadcast(intent);
+//			return false;
 		}
 		return super.onKeyDown(keyCode, event);
 	}
@@ -150,59 +140,53 @@ public class PayActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 
-		try {
-			unregisterReceiver(mPayResultReceiver);
-			mPayResultReceiver = null;
-		} catch (Exception e) {
-		}
+//		try {
+//			unregisterReceiver(mPayResultReceiver);
+//			mPayResultReceiver = null;
+//		} catch (Exception e) {
+//		}
 
 	}
 
-	/**
-	 * 支付结果回调
-	 */
-	public BroadcastReceiver mPayResultReceiver = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// TODO Auto-generated method stub
-			if (intent.getAction().equals(KeyConstants.PAY_RESULT_RECEIVER_ACTION) && mChargeListener != null) { // 支付结果
-				Bundle bundle = intent.getExtras();
-				String result = bundle.getString(KeyConstants.INTENT_KEY_PAY_RESULT);
-				String msg = bundle.getString(KeyConstants.INTENT_KEY_PAY_MSG);
-
-				Log.d(TAG, "mPayResultReceiver (result:" + result + " msg:" + msg + ")");
-
-				if (result == null) {
-					return;
-				}
-
-				if (result.equals(KeyConstants.INTENT_KEY_PAY_SUCCESS)) {
-					mChargeListener.onSuccess(bundle);
-				} else if (result.equals(KeyConstants.INTENT_KEY_PAY_FAIL)) {
-					mChargeListener.onFail(msg);
-				} else if (result.equals(KeyConstants.INTENT_KEY_PAY_CANCEL)) {
-					mChargeListener.onCancel();
-				}
-				// 退出
-				finish();
-				mChargeListener = null;
-			}
-		}
-	};
-
-	/**
-	 * 设置支付回调接口
-	 * 
-	 * @param chargeListener
-	 */
-	public static void setPayCallBackListener(ChargeListener chargeListener) {
-		mChargeListener = chargeListener;
-	}
-	
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		// TODO Auto-generated method stub
-		super.onConfigurationChanged(newConfig);
-	}
+//	/**
+//	 * 支付结果回调
+//	 */
+//	public BroadcastReceiver mPayResultReceiver = new BroadcastReceiver() {
+//
+//		@Override
+//		public void onReceive(Context context, Intent intent) {
+//			// TODO Auto-generated method stub
+//			if (intent.getAction().equals(KeyConstants.PAY_RESULT_RECEIVER_ACTION) && mChargeListener != null) { // 支付结果
+//				Bundle bundle = intent.getExtras();
+//				String result = bundle.getString(KeyConstants.INTENT_KEY_PAY_RESULT);
+//				String msg = bundle.getString(KeyConstants.INTENT_KEY_PAY_MSG);
+//
+//				Log.d(TAG, "mPayResultReceiver (result:" + result + " msg:" + msg + ")");
+//
+//				if (result == null) {
+//					return;
+//				}
+//
+//				if (result.equals(KeyConstants.INTENT_KEY_PAY_SUCCESS)) {
+//					mChargeListener.onSuccess(bundle);
+//				} else if (result.equals(KeyConstants.INTENT_KEY_PAY_FAIL)) {
+//					mChargeListener.onFail(msg);
+//				} else if (result.equals(KeyConstants.INTENT_KEY_PAY_CANCEL)) {
+//					mChargeListener.onCancel();
+//				}
+//				// 退出
+//				finish();
+//				mChargeListener = null;
+//			}
+//		}
+//	};
+//
+//	/**
+//	 * 设置支付回调接口
+//	 * 
+//	 * @param chargeListener
+//	 */
+//	public static void setPayCallBackListener(ChargeListener chargeListener) {
+//		mChargeListener = chargeListener;
+//	}
 }

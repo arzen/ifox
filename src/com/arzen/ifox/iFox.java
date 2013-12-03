@@ -35,7 +35,7 @@ public abstract class iFox {
 	/**
 	 * 动态库操作类
 	 */
-	private static DynamicLibManager mJarUtil;
+	private static DynamicLibManager mDynamicLibManager;
 	//是否初始化成功
 	private static boolean isInitSuccess = false;
 	
@@ -92,9 +92,9 @@ public abstract class iFox {
 									// 设置当前游戏id
 									GID = init.getData().getGid();
 									
-									if(mJarUtil != null){
+									if(mDynamicLibManager != null){
 										//检查动态库是否有更新
-										checkUpdate(activity,GID, "cid", mJarUtil.getmVertionCode());
+										checkUpdate(activity,GID, "cid", mDynamicLibManager.getmVertionCode());
 									}
 									
 								} else {
@@ -152,10 +152,10 @@ public abstract class iFox {
 	 * 初始化动态库资源
 	 */
 	private static void initDexResource(Activity activity) {
-		if (mJarUtil == null)
-			mJarUtil = new DynamicLibManager(activity);
+		if (mDynamicLibManager == null)
+			mDynamicLibManager = new DynamicLibManager(activity);
 		// 初始化lib资源,导入资源,以便做到调用,lib apk 动态加载view
-		mJarUtil.initIFoxLibResource(activity, iFox.DEX_FILE);
+		mDynamicLibManager.initIFoxLibResource(activity, iFox.DEX_FILE);
 	}
 
 	/**
@@ -167,13 +167,13 @@ public abstract class iFox {
 		if (activity == null) {
 			return null;
 		}
-		if (mJarUtil == null)
-			mJarUtil = new DynamicLibManager(activity);
+		if (mDynamicLibManager == null)
+			mDynamicLibManager = new DynamicLibManager(activity);
 
 		// 初始化lib资源,导入资源,以便做到调用,lib apk 动态加载view
-		mJarUtil.initIFoxLibResource(activity, iFox.DEX_FILE);
+		mDynamicLibManager.initIFoxLibResource(activity, iFox.DEX_FILE);
 
-		return mJarUtil;
+		return mDynamicLibManager;
 	}
 
 	/**
@@ -188,8 +188,26 @@ public abstract class iFox {
 	 * 
 	 */
 
-	public static void loginPage(final Activity activity, final Bundle bundle, final LoginListener listener) {
-
+	public static void loginPage(final Activity activity, Bundle bundle, final LoginListener listener) {
+		if (activity == null || listener == null) {
+			try {
+				throw new Exception("context or listener is null!");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		}
+		
+		Intent intent = new Intent(activity, LoginActivity.class);
+		if (bundle == null) {
+			bundle = new Bundle();
+		}
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, GID); // 游戏id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); // 渠道id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, "token"); // token
+		intent.putExtras(bundle);
+		activity.startActivity(intent);
 	}
 
 	public static interface LoginListener {
@@ -225,7 +243,7 @@ public abstract class iFox {
 	public static void chargePage(final Activity activity, Bundle bundle, final ChargeListener listener) {
 		if (activity == null || listener == null) {
 			try {
-				throw new Exception("context and listener is null!");
+				throw new Exception("context or listener is null!");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -278,11 +296,11 @@ public abstract class iFox {
 	 * @return
 	 */
 	public static DynamicLibManager getJarUtil() {
-		return mJarUtil;
+		return mDynamicLibManager;
 	}
 	
 	public static void setJarUtil(DynamicLibManager jarUtil)
 	{
-		mJarUtil = jarUtil;
+		mDynamicLibManager = jarUtil;
 	}
 }
