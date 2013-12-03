@@ -69,9 +69,9 @@ public class KeyConstants {
 	public static String INTENT_DATA_KEY_ORDERID = "orderid";
 	
 	/**
-	 * 支付回调action
+	 * 结果回调action
 	 */
-	public static final String PAY_RESULT_RECEIVER_ACTION = "android.action.pay.result.receiver";
+	public static final String RECEIVER_RESULT_ACTION = "android.action.result.receiver";
 	/**
 	 * 支付结果key
 	 */

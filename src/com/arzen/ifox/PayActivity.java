@@ -66,7 +66,7 @@ public class PayActivity extends Activity {
 		// 显示支付页
 		showPayFragment();
 		// 注册支付广播
-		registerReceiver(mPayResultReceiver, new IntentFilter(KeyConstants.PAY_RESULT_RECEIVER_ACTION));
+		registerReceiver(mPayResultReceiver, new IntentFilter(KeyConstants.RECEIVER_RESULT_ACTION));
 	}
 
 	/**
@@ -110,12 +110,12 @@ public class PayActivity extends Activity {
 			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
-
+   
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			Intent intent = new Intent(KeyConstants.PAY_RESULT_RECEIVER_ACTION);
+			Intent intent = new Intent(KeyConstants.RECEIVER_RESULT_ACTION);
 			Bundle bundle = new Bundle();
 			bundle.putString(KeyConstants.INTENT_KEY_PAY_RESULT, KeyConstants.INTENT_KEY_PAY_CANCEL);
 			intent.putExtras(bundle);
@@ -166,7 +166,7 @@ public class PayActivity extends Activity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
-			if (intent.getAction().equals(KeyConstants.PAY_RESULT_RECEIVER_ACTION) && mChargeListener != null) { // 支付结果
+			if (intent.getAction().equals(KeyConstants.RECEIVER_RESULT_ACTION) && mChargeListener != null) { // 支付结果
 				Bundle bundle = intent.getExtras();
 				String result = bundle.getString(KeyConstants.INTENT_KEY_PAY_RESULT);
 				String msg = bundle.getString(KeyConstants.INTENT_KEY_PAY_MSG);

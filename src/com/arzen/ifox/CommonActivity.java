@@ -1,8 +1,10 @@
 package com.arzen.ifox;
 
+import com.arzen.ifox.iFox.ChargeListener;
 import com.arzen.ifox.setting.KeyConstants;
 import com.arzen.ifox.utils.DynamicLibManager;
 import com.arzen.ifox.utils.MsgUtil;
+import com.encore.libs.utils.Log;
 
 import dalvik.system.DexClassLoader;
 import android.app.Activity;
@@ -12,6 +14,7 @@ import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
@@ -24,11 +27,14 @@ import android.widget.Toast;
 /**
  * 公用activity,动态库下所有资源的载体,所有fragment统一处理,方便动态升级
  * 支付,登录,注册,修改密码等,需要填写相应参数,进行统一加载动态库,显示
+ * 
  * @author Encore.liang
  * 
  */
 public class CommonActivity extends BaseActivity {
-	
+
+	public static final String TAG = "CommonActivity";
+
 	// 资源管理
 	private AssetManager mAssetManager;
 	// 资源
@@ -56,12 +62,14 @@ public class CommonActivity extends BaseActivity {
 		setContentView(rootView);
 
 		mBundle = getIntent().getExtras();
-		//bundle 如果为空抛出异常
+		// bundle 如果为空抛出异常
 		if (mBundle == null || mBundle.getString(KeyConstants.KEY_PACKAGE_NAME) == null) {
 			throw new IllegalArgumentException("bundle or param packageName is null!");
 		}
-		//加载动态库fragment
+		// 加载动态库fragment
 		loadDynamicFragment();
+
+		registerReceiver(mBroadcastReceiver, new IntentFilter(KeyConstants.RECEIVER_RESULT_ACTION));
 	}
 
 	/**
@@ -69,15 +77,15 @@ public class CommonActivity extends BaseActivity {
 	 */
 	public void initResources() {
 		// init
-		DynamicLibManager jarUtil = iFox.initLibApkResource(this);
-		if (jarUtil == null) { // 未初始化退出
+		DynamicLibManager dl = iFox.initLibApkResource(this);
+		if (dl == null) { // 未初始化退出
 			finish();
 			return;
 		}
-		mAssetManager = jarUtil.getmAssetManager();
-		mClassLoader = (DexClassLoader) jarUtil.getmClassLoader();
-		mTheme = jarUtil.getmTheme();
-		mResources = jarUtil.getmResources();
+		mAssetManager = dl.getmAssetManager();
+		mClassLoader = (DexClassLoader) dl.getmClassLoader();
+		mTheme = dl.getmTheme();
+		mResources = dl.getmResources();
 
 		mTheme = mResources.newTheme();
 		mTheme.setTo(super.getTheme());
@@ -88,9 +96,9 @@ public class CommonActivity extends BaseActivity {
 	 */
 	public void loadDynamicFragment() {
 		try {
-			//获取需要加载的fragment包名
+			// 获取需要加载的fragment包名
 			String packageName = mBundle.getString(KeyConstants.KEY_PACKAGE_NAME);
-			//加载fragment
+			// 加载fragment
 			Fragment f = (Fragment) getClassLoader().loadClass(packageName).newInstance();
 			if (f == null) {
 				MsgUtil.msg("load fragment class is null!", this);
@@ -108,25 +116,72 @@ public class CommonActivity extends BaseActivity {
 			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
+		try {
+			// 获取需要加载的fragment包名
+			String packageName = mBundle.getString(KeyConstants.KEY_PACKAGE_NAME);
+			DynamicLibManager dl = iFox.getDynamicLibManager(this);
+			Class[] argsClass = { Activity.class, Integer.class, KeyEvent.class };
+			Object[] values = { CommonActivity.this, keyCode, event };
+			boolean flag = (Boolean) dl.executeJarClass(this, iFox.DEX_FILE, packageName, "onKeyDown", argsClass, values);
+			if(!flag){
+				return flag;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return super.onKeyDown(keyCode, event);
 	}
-	
+
 	/**
 	 * 公用activity广播,方便接收回调以便处理
 	 */
 	public BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
-		
+
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
-			
+			if (intent.getAction().equals(KeyConstants.RECEIVER_RESULT_ACTION) && getChargeListener() != null) { // 支付结果
+				Bundle bundle = intent.getExtras();
+				String result = bundle.getString(KeyConstants.INTENT_KEY_PAY_RESULT);
+				String msg = bundle.getString(KeyConstants.INTENT_KEY_PAY_MSG);
+
+				Log.d(TAG, "mPayResultReceiver (result:" + result + " msg:" + msg + ")");
+
+				if (result == null) {
+					return;
+				}
+
+				ChargeListener chargeListener = getChargeListener();
+
+				if (result.equals(KeyConstants.INTENT_KEY_PAY_SUCCESS)) {
+					chargeListener.onSuccess(bundle);
+				} else if (result.equals(KeyConstants.INTENT_KEY_PAY_FAIL)) {
+					chargeListener.onFail(msg);
+				} else if (result.equals(KeyConstants.INTENT_KEY_PAY_CANCEL)) {
+					chargeListener.onCancel();
+				}
+				// 退出
+				finish();
+				setPayCallBackListener(null);
+			}
 		}
 	};
-	
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		try {
+			unregisterReceiver(mBroadcastReceiver);
+			mBroadcastReceiver = null;
+		} catch (Exception e) {
+		}
+	}
+
 	@Override
 	public AssetManager getAssets() {
 		return mAssetManager == null ? super.getAssets() : mAssetManager;

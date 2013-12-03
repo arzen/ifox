@@ -295,11 +295,14 @@ public abstract class iFox {
 	 * 
 	 * @return
 	 */
-	public static DynamicLibManager getJarUtil() {
+	public static DynamicLibManager getDynamicLibManager(Activity activity) {
+		if(mDynamicLibManager == null){
+			mDynamicLibManager = new DynamicLibManager(activity);
+		}
 		return mDynamicLibManager;
 	}
 	
-	public static void setJarUtil(DynamicLibManager jarUtil)
+	public static void setDynamicLibManager(DynamicLibManager jarUtil)
 	{
 		mDynamicLibManager = jarUtil;
 	}
