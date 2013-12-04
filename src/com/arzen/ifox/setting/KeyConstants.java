@@ -8,10 +8,6 @@ package com.arzen.ifox.setting;
  */
 public class KeyConstants {
 	/**
-	 * home fragment pkg
-	 */
-	public static final String PKG_HOME_FRAGMENT = "com.arzen.iFoxLib.fragment.HomeFragment";
-	/**
 	 * 支付页面
 	 */
 	public static final String PKG_PAY_FRAGMENT = "com.arzen.iFoxLib.fragment.PayFragment";
@@ -19,6 +15,11 @@ public class KeyConstants {
 	 * 登录页面
 	 */
 	public static final String PKG_LOGIN_FRAGMENT = "com.arzen.iFoxLib.fragment.LoginFragment";
+	
+	/**
+	 * 公用activty action
+	 */
+	public static final String ACTION_COMMON_ACTIVITY = "com.action.common.activty";
 	
 	/**
 	 * 动态加载fragment key

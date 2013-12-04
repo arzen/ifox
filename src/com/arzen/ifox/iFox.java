@@ -199,10 +199,11 @@ public abstract class iFox {
 			return;
 		}
 		
-		Intent intent = new Intent(activity, LoginActivity.class);
+		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
 		if (bundle == null) {
 			bundle = new Bundle();
 		}
+		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_LOGIN_FRAGMENT);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, GID); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); // 渠道id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, "token"); // token
@@ -251,12 +252,14 @@ public abstract class iFox {
 			return;
 		}
 		//设置支付回调接口
-		PayActivity.setPayCallBackListener(listener);
+//		PayActivity.setPayCallBackListener(listener);
+		BaseActivity.setPayCallBackListener(listener);
 		
-		Intent intent = new Intent(activity, PayActivity.class);
+		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
 		if (bundle == null) {
 			bundle = new Bundle();
 		}
+		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_PAY_FRAGMENT);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, GID); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); // 渠道id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, "token"); // token

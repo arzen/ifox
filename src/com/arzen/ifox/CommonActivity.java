@@ -21,6 +21,7 @@ import android.content.res.Resources.Theme;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
@@ -54,7 +55,9 @@ public class CommonActivity extends BaseActivity {
 		initResources();
 
 		super.onCreate(savedInstanceState);
-
+		
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
 		// 设置一个空的view,加载动态fragment
 		FrameLayout rootView = new FrameLayout(this);
 		rootView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -180,6 +183,12 @@ public class CommonActivity extends BaseActivity {
 			mBroadcastReceiver = null;
 		} catch (Exception e) {
 		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override

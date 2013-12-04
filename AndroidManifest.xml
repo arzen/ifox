@@ -60,14 +60,14 @@
         </activity>
         <activity
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:name="com.arzen.ifox.PayActivity"
+            android:name="com.arzen.ifox.CommonActivity"
             android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="com.action.common.activty" />
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
         </activity>
-         <activity
-             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:name="com.arzen.ifox.LoginActivity"
-            android:label="@string/app_name" >
-        </activity>
+         
 
         <!-- START 以下是SDK需要的信息 -->
         <activity
