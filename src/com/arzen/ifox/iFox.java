@@ -198,6 +198,7 @@ public abstract class iFox {
 			}
 			return;
 		}
+		BaseActivity.setLoginListener(listener);
 		
 		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
 		if (bundle == null) {

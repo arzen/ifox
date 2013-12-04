@@ -73,26 +73,41 @@ public class KeyConstants {
 	 * 结果回调action
 	 */
 	public static final String RECEIVER_RESULT_ACTION = "android.action.result.receiver";
+	
 	/**
-	 * 支付结果key
+	 * 结果回调action key
 	 */
-	public static final String INTENT_KEY_PAY_RESULT = "result";
+	public static final String RECEIVER_KEY_DISPOSE_ACTION = "disposeAction";
+	
 	/**
-	 * 支付提示key
+	 * pay action
 	 */
-	public static final String INTENT_KEY_PAY_MSG = "showMsg";
+	public static final String RECEIVER_ACTION_PAY = "android.receiver.action.pay";
+	/**
+	 * login action
+	 */
+	public static final String RECEIVER_ACTION_LOGIN = "android.receiver.action.login";
+	
+	/**
+	 * 结果key
+	 */
+	public static final String INTENT_KEY_RESULT = "result";
+	/**
+	 * 提示key
+	 */
+	public static final String INTENT_KEY_MSG = "showMsg";
 
 	/**
-	 * 支付成功
+	 * 结果成功key
 	 */
-	public static final String INTENT_KEY_PAY_SUCCESS = "success";
+	public static final String INTENT_KEY_SUCCESS = "success";
 
 	/**
-	 * 支付失败。
+	 * 结果失败。
 	 */
-	public static final String INTENT_KEY_PAY_FAIL = "fail";
+	public static final String INTENT_KEY_FAIL = "fail";
 	/**
-	 * 支付取消。
+	 * 结果取消。key
 	 */
-	public static final String INTENT_KEY_PAY_CANCEL = "cancel";
+	public static final String INTENT_KEY_CANCEL = "cancel";
 }

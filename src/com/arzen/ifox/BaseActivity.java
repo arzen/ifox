@@ -1,6 +1,7 @@
 package com.arzen.ifox;
 
 import com.arzen.ifox.iFox.ChargeListener;
+import com.arzen.ifox.iFox.LoginListener;
 
 import android.app.Activity;
 
@@ -29,4 +30,13 @@ public class BaseActivity extends Activity {
 		return mChargeListener;
 	}
 
+	private static LoginListener mLoginListener;
+
+	public static void setLoginListener(LoginListener listener) {
+		mLoginListener = listener;
+	}
+
+	public static LoginListener getLoginListener() {
+		return mLoginListener;
+	}
 }

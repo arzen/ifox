@@ -1,6 +1,7 @@
 package com.arzen.ifox;
 
 import com.arzen.ifox.iFox.ChargeListener;
+import com.arzen.ifox.iFox.LoginListener;
 import com.arzen.ifox.setting.KeyConstants;
 import com.arzen.ifox.utils.DynamicLibManager;
 import com.arzen.ifox.utils.MsgUtil;
@@ -55,9 +56,9 @@ public class CommonActivity extends BaseActivity {
 		initResources();
 
 		super.onCreate(savedInstanceState);
-		
+
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
+
 		// 设置一个空的view,加载动态fragment
 		FrameLayout rootView = new FrameLayout(this);
 		rootView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -130,7 +131,7 @@ public class CommonActivity extends BaseActivity {
 			Class[] argsClass = { Activity.class, Integer.class, KeyEvent.class };
 			Object[] values = { CommonActivity.this, keyCode, event };
 			boolean flag = (Boolean) dl.executeJarClass(this, iFox.DEX_FILE, packageName, "onKeyDown", argsClass, values);
-			if(!flag){
+			if (!flag) {
 				return flag;
 			}
 		} catch (Exception e) {
@@ -147,32 +148,70 @@ public class CommonActivity extends BaseActivity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
-			if (intent.getAction().equals(KeyConstants.RECEIVER_RESULT_ACTION) && getChargeListener() != null) { // 支付结果
+			if (intent.getAction().equals(KeyConstants.RECEIVER_RESULT_ACTION) && intent != null) {
 				Bundle bundle = intent.getExtras();
-				String result = bundle.getString(KeyConstants.INTENT_KEY_PAY_RESULT);
-				String msg = bundle.getString(KeyConstants.INTENT_KEY_PAY_MSG);
-
-				Log.d(TAG, "mPayResultReceiver (result:" + result + " msg:" + msg + ")");
-
-				if (result == null) {
-					return;
+				// 得到当前结果需要处理的动作， 支付，登录等
+				String disposeAction = bundle.getString(KeyConstants.RECEIVER_KEY_DISPOSE_ACTION);
+				if (disposeAction != null && disposeAction.equals(KeyConstants.RECEIVER_ACTION_PAY) && getChargeListener() != null) {
+					disposePayReceiver(bundle);
+				} else if (disposeAction != null && disposeAction.equals(KeyConstants.RECEIVER_ACTION_LOGIN) && getLoginListener() != null) {
+					disposeLoginReceiver(bundle);
+				} else {
+					finish();
 				}
-
-				ChargeListener chargeListener = getChargeListener();
-
-				if (result.equals(KeyConstants.INTENT_KEY_PAY_SUCCESS)) {
-					chargeListener.onSuccess(bundle);
-				} else if (result.equals(KeyConstants.INTENT_KEY_PAY_FAIL)) {
-					chargeListener.onFail(msg);
-				} else if (result.equals(KeyConstants.INTENT_KEY_PAY_CANCEL)) {
-					chargeListener.onCancel();
-				}
-				// 退出
-				finish();
-				setPayCallBackListener(null);
 			}
 		}
 	};
+
+	/**
+	 * 处理登录回调
+	 * 
+	 * @param bundle
+	 */
+	public void disposeLoginReceiver(Bundle bundle) {
+		String result = bundle.getString(KeyConstants.INTENT_KEY_RESULT);
+		if (result == null) {
+			return;
+		}
+		LoginListener listener = getLoginListener();
+
+		if (result.equals(KeyConstants.INTENT_KEY_SUCCESS)) {
+			listener.onSuccess(bundle);
+		} else if (result.equals(KeyConstants.INTENT_KEY_CANCEL)) {
+			listener.onCancel();
+		}
+
+		// 退出
+		finish();
+		setLoginListener(null);
+	}
+
+	/**
+	 * 处理支付receiver回调
+	 * 
+	 * @param bundle
+	 */
+	public void disposePayReceiver(Bundle bundle) {
+		String result = bundle.getString(KeyConstants.INTENT_KEY_RESULT);
+		String msg = bundle.getString(KeyConstants.INTENT_KEY_MSG);
+
+		Log.d(TAG, "mPayResultReceiver (result:" + result + " msg:" + msg + ")");
+
+		if (result == null) {
+			return;
+		}
+		ChargeListener chargeListener = getChargeListener();
+		if (result.equals(KeyConstants.INTENT_KEY_SUCCESS)) {
+			chargeListener.onSuccess(bundle);
+		} else if (result.equals(KeyConstants.INTENT_KEY_FAIL)) {
+			chargeListener.onFail(msg);
+		} else if (result.equals(KeyConstants.INTENT_KEY_CANCEL)) {
+			chargeListener.onCancel();
+		}
+		// 退出
+		finish();
+		setPayCallBackListener(null);
+	}
 
 	@Override
 	protected void onDestroy() {
@@ -184,7 +223,7 @@ public class CommonActivity extends BaseActivity {
 		} catch (Exception e) {
 		}
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
