@@ -1,8 +1,10 @@
 package com.arzen.ifox;
 
+import com.arzen.ifox.iFox.ChangePasswordListener;
 import com.arzen.ifox.iFox.ChargeListener;
 import com.arzen.ifox.iFox.LoginListener;
 import com.arzen.ifox.setting.KeyConstants;
+import com.arzen.ifox.setting.UserSetting;
 import com.arzen.ifox.utils.DynamicLibManager;
 import com.arzen.ifox.utils.MsgUtil;
 import com.encore.libs.utils.Log;
@@ -156,12 +158,34 @@ public class CommonActivity extends BaseActivity {
 					disposePayReceiver(bundle);
 				} else if (disposeAction != null && disposeAction.equals(KeyConstants.RECEIVER_ACTION_LOGIN) && getLoginListener() != null) {
 					disposeLoginReceiver(bundle);
+				} else if (disposeAction != null && disposeAction.equals(KeyConstants.RECEIVER_ACTION_CHANGE_PASSWORD) && getChangePasswordListener() != null) {
+					disposeChangePwd(bundle);
 				} else {
 					finish();
 				}
 			}
 		}
 	};
+	
+	/**
+	 * 处理修改密码回调
+	 * @param bundle
+	 */
+	public void disposeChangePwd(Bundle bundle){
+		String result = bundle.getString(KeyConstants.INTENT_KEY_RESULT);
+		if (result == null) {
+			return;
+		}
+		ChangePasswordListener listener = getChangePasswordListener();
+		if (result.equals(KeyConstants.INTENT_KEY_SUCCESS)) {
+			listener.onSuccess();
+		} else if (result.equals(KeyConstants.INTENT_KEY_CANCEL)) {
+			listener.onCancel();
+		}
+		// 退出
+		finish();
+		setChangePasswordListener(null);
+	}
 
 	/**
 	 * 处理登录回调
@@ -176,6 +200,9 @@ public class CommonActivity extends BaseActivity {
 		LoginListener listener = getLoginListener();
 
 		if (result.equals(KeyConstants.INTENT_KEY_SUCCESS)) {
+			String token = bundle.getString(KeyConstants.INTENT_DATA_KEY_TOKEN);
+			UserSetting.saveToken(this, token); // 保存token
+			Log.d(TAG, "loginReceiver: token:" + token);
 			listener.onSuccess(bundle);
 		} else if (result.equals(KeyConstants.INTENT_KEY_CANCEL)) {
 			listener.onCancel();

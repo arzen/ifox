@@ -15,6 +15,10 @@ public class KeyConstants {
 	 * 登录页面
 	 */
 	public static final String PKG_LOGIN_FRAGMENT = "com.arzen.iFoxLib.fragment.LoginFragment";
+	/**
+	 * 修改密码页面
+	 */
+	public static final String PKG_CHANGE_PASSWORD_FRAGMENT = "com.arzen.iFoxLib.fragment.ChangePasswordFragment";
 	
 	/**
 	 * 公用activty action
@@ -87,6 +91,10 @@ public class KeyConstants {
 	 * login action
 	 */
 	public static final String RECEIVER_ACTION_LOGIN = "android.receiver.action.login";
+	/**
+	 * change password action
+	 */
+	public static final String RECEIVER_ACTION_CHANGE_PASSWORD = "android.receiver.action.changepassword";
 	
 	/**
 	 * 结果key
@@ -110,4 +118,17 @@ public class KeyConstants {
 	 * 结果取消。key
 	 */
 	public static final String INTENT_KEY_CANCEL = "cancel";
+	
+	/**
+	 * 用户速数据shaed
+	 */
+	public static final String SHARED_NAME_USER = "setting";
+	/**
+	 * key gid
+	 */
+	public static final String SHARED_KEY_GID  ="game_gid";
+	/**
+	 * token
+	 */
+	public static final String SHARED_KEY_TOKEN = "token";
 }

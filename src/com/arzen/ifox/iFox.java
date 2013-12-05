@@ -15,6 +15,7 @@ import com.arzen.ifox.bean.DynamicUpdate;
 import com.arzen.ifox.bean.DynamicUpdate.DynamicData;
 import com.arzen.ifox.bean.Init;
 import com.arzen.ifox.setting.KeyConstants;
+import com.arzen.ifox.setting.UserSetting;
 import com.arzen.ifox.utils.CommonUtil;
 import com.arzen.ifox.utils.DynamicLibUtils;
 import com.arzen.ifox.utils.DynamicLibManager;
@@ -31,7 +32,7 @@ public abstract class iFox {
 	/**
 	 * 当前游戏id
 	 */
-	public static String GID = "";
+//	public static String GID = "";
 	/**
 	 * 动态库操作类
 	 */
@@ -90,11 +91,13 @@ public abstract class iFox {
 									// 初始化dex resource资源
 									initDexResource(activity);
 									// 设置当前游戏id
-									GID = init.getData().getGid();
-									
-									if(mDynamicLibManager != null){
-										//检查动态库是否有更新
-										checkUpdate(activity,GID, "cid", mDynamicLibManager.getmVertionCode());
+									String gid = init.getData().getGid();
+									//保存当前gid
+									UserSetting.saveData(activity, gid);
+
+									if (mDynamicLibManager != null) {
+										// 检查动态库是否有更新
+										checkUpdate(activity, gid, "cid", mDynamicLibManager.getmVertionCode());
 									}
 									
 								} else {
@@ -198,16 +201,25 @@ public abstract class iFox {
 			}
 			return;
 		}
+		
+		String gid = UserSetting.getGID(activity);
+		if(gid.equals("")){
+			MsgUtil.msg("未初始化!", activity);
+			return;
+		}
+		//设置登录回调
 		BaseActivity.setLoginListener(listener);
+		//获得当前token
+		String token = UserSetting.getToken(activity.getApplicationContext());
 		
 		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
 		if (bundle == null) {
 			bundle = new Bundle();
 		}
 		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_LOGIN_FRAGMENT);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, GID); // 游戏id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); // 渠道id
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, "token"); // token
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
 	}
@@ -227,7 +239,61 @@ public abstract class iFox {
 		public void onCancel();
 
 	}
+	/**
+	 * 修改密码
+	 * @param activity 上下文
+	 * @param bundle 必须含有 key = 'token' 的值
+	 * @param listener 修改密码回调
+	 */
+	public static void changePassword(final Activity activity, Bundle bundle, final ChangePasswordListener listener) {
+		if (activity == null || listener == null) {
+			try {
+				throw new Exception("context or listener is null!");
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		}
+		String token = UserSetting.getToken(activity.getApplicationContext());
+		String gid = UserSetting.getGID(activity.getApplicationContext());
+		if(gid.equals("")){
+			MsgUtil.msg("未初始化!", activity);
+			return;
+		}else if(token.equals("")){
+			MsgUtil.msg("未登录!", activity);
+			return;
+		}
+		
+		
+		BaseActivity.setChangePasswordListener(listener);
+		
+		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
+		if (bundle == null) {
+			bundle = new Bundle();
+		}
+		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_CHANGE_PASSWORD_FRAGMENT);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); // 渠道id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
+		intent.putExtras(bundle);
+		activity.startActivity(intent);
+	}
 
+	public static interface ChangePasswordListener {
+		/**
+		 * 修改成功的回调
+		 * 
+		 * @param bundle 回调参数
+		 */
+		public void onSuccess();
+
+		/**
+		 * 登录过程取消
+		 */
+		public void onCancel();
+
+	}
 	
 
 	/**
@@ -245,15 +311,22 @@ public abstract class iFox {
 	public static void chargePage(final Activity activity, Bundle bundle, final ChargeListener listener) {
 		if (activity == null || listener == null) {
 			try {
-				throw new Exception("context or listener is null!");
+				throw new Exception("上下文,与接口不能为空");
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return;
 		}
+		
+		String gid = UserSetting.getGID(activity);
+		if(gid.equals("")){
+			MsgUtil.msg("未初始化!", activity);
+			return;
+		}
+		// 获得当前token
+		String token = UserSetting.getToken(activity.getApplicationContext());
 		//设置支付回调接口
-//		PayActivity.setPayCallBackListener(listener);
 		BaseActivity.setPayCallBackListener(listener);
 		
 		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
@@ -261,9 +334,9 @@ public abstract class iFox {
 			bundle = new Bundle();
 		}
 		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_PAY_FRAGMENT);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, GID); // 游戏id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); // 渠道id
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, "token"); // token
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
 	}

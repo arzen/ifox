@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+import com.arzen.ifox.iFox.ChangePasswordListener;
 import com.arzen.ifox.iFox.ChargeListener;
 import com.arzen.ifox.iFox.LoginListener;
 import com.arzen.ifox.setting.KeyConstants;
@@ -19,6 +20,7 @@ public class MainActivity extends Activity {
 	
 	private Button mBtnPay;
 	private Button mBtnLogin;
+	private Button mBtnChangePassword;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -31,10 +33,12 @@ public class MainActivity extends Activity {
 		
 		mBtnLogin = (Button) findViewById(R.id.btnLogin);
 		mBtnLogin.setOnClickListener(mOnClickListener);
+		
+		mBtnChangePassword = (Button) findViewById(R.id.btnChangePassword);
+		mBtnChangePassword.setOnClickListener(mOnClickListener);
 
 		iFox.init(this, null, null);
-		
-		
+	
 	}
 	
 	public OnClickListener mOnClickListener = new OnClickListener() {
@@ -86,13 +90,31 @@ public class MainActivity extends Activity {
 					@Override
 					public void onSuccess(Bundle bundle) {
 						// TODO Auto-generated method stub
-						MsgUtil.msg("login onSuccess()", MainActivity.this);
+						String token = bundle.getString(KeyConstants.INTENT_DATA_KEY_TOKEN);
+						MsgUtil.msg("login onSuccess! token is " + token, MainActivity.this);
 					}
 					
 					@Override
 					public void onCancel() {
 						// TODO Auto-generated method stub
 						MsgUtil.msg("login onCancel()", MainActivity.this);
+					}
+				});
+				break;
+			case R.id.btnChangePassword:
+				
+				iFox.changePassword(MainActivity.this, null, new ChangePasswordListener() {
+					
+					@Override
+					public void onSuccess() {
+						// TODO Auto-generated method stub
+						MsgUtil.msg("chanPassword onSuccess():" , MainActivity.this);
+					}
+					
+					@Override
+					public void onCancel() {
+						// TODO Auto-generated method stub
+						MsgUtil.msg("chanPassword onCancel():" , MainActivity.this);
 					}
 				});
 				break;
