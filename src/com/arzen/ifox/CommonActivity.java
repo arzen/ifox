@@ -1,15 +1,7 @@
 package com.arzen.ifox;
 
-import com.arzen.ifox.iFox.ChangePasswordListener;
-import com.arzen.ifox.iFox.ChargeListener;
-import com.arzen.ifox.iFox.LoginListener;
-import com.arzen.ifox.setting.KeyConstants;
-import com.arzen.ifox.setting.UserSetting;
-import com.arzen.ifox.utils.DynamicLibManager;
-import com.arzen.ifox.utils.MsgUtil;
-import com.encore.libs.utils.Log;
+import java.util.Map;
 
-import dalvik.system.DexClassLoader;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -27,6 +19,20 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+
+import com.arzen.ifox.iFox.ChangePasswordListener;
+import com.arzen.ifox.iFox.ChargeListener;
+import com.arzen.ifox.iFox.LoginListener;
+import com.arzen.ifox.pay.WayPay;
+import com.arzen.ifox.setting.KeyConstants;
+import com.arzen.ifox.setting.UserSetting;
+import com.arzen.ifox.utils.DynamicLibManager;
+import com.arzen.ifox.utils.MsgUtil;
+import com.bx.pay.ApkUpdate;
+import com.bx.pay.ApkUpdate.ApkUpdateCallback;
+import com.encore.libs.utils.Log;
+
+import dalvik.system.DexClassLoader;
 
 /**
  * 公用activity,动态库下所有资源的载体,所有fragment统一处理,方便动态升级
@@ -76,6 +82,7 @@ public class CommonActivity extends BaseActivity {
 		loadDynamicFragment();
 
 		registerReceiver(mBroadcastReceiver, new IntentFilter(KeyConstants.RECEIVER_RESULT_ACTION));
+		registerReceiver(mPayBroadcastReceiver, new IntentFilter(KeyConstants.RECEIVER_PAY_START_ACTION));
 	}
 
 	/**
@@ -166,12 +173,58 @@ public class CommonActivity extends BaseActivity {
 			}
 		}
 	};
-	
+	/**
+	 * 支付广播
+	 */
+	public BroadcastReceiver mPayBroadcastReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			if (intent != null && intent.getAction().equals(KeyConstants.RECEIVER_PAY_START_ACTION)) {
+				int payType = intent.getIntExtra(KeyConstants.INTENT_DATA_KEY_PAY_TYPE, -1);
+				if (payType != -1) {
+					switch (payType) {
+					case KeyConstants.PAY_TYPE_WIIPAY:
+						toWayPay();
+						break;
+					}
+				}
+			}
+		}
+	};
+
+	// 订单请求出错后重试次数
+	public int mReTryCreateOrderCount = 4;
+	// 微派支付工具类
+	private WayPay mWayPay;
+
+	/**
+	 * 跳转微派支付
+	 */
+	public void toWayPay() {
+
+		// 检测微派支付有没更新
+		new ApkUpdate(this, new ApkUpdateCallback() {
+			@Override
+			public void launch(Map<String, String> arg0) {
+				// TODO Auto-generated method stub
+				mReTryCreateOrderCount = 4;
+				if (mWayPay == null) {
+					mWayPay = new WayPay(mBundle);
+				}
+				Log.d("PayFragment", "way pay");
+				mWayPay.toPay(CommonActivity.this, "0001");
+			}
+		});
+	}
+
 	/**
 	 * 处理修改密码回调
+	 * 
 	 * @param bundle
 	 */
-	public void disposeChangePwd(Bundle bundle){
+	public void disposeChangePwd(Bundle bundle) {
 		String result = bundle.getString(KeyConstants.INTENT_KEY_RESULT);
 		if (result == null) {
 			return;
@@ -247,6 +300,9 @@ public class CommonActivity extends BaseActivity {
 		try {
 			unregisterReceiver(mBroadcastReceiver);
 			mBroadcastReceiver = null;
+			
+			unregisterReceiver(mPayBroadcastReceiver);
+			mPayBroadcastReceiver = null;
 		} catch (Exception e) {
 		}
 	}

@@ -1,12 +1,19 @@
 ﻿package com.arzen.ifox;
 
-import org.w3c.dom.ls.LSException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.arzen.ifox.api.HttpIfoxApi;
@@ -17,8 +24,8 @@ import com.arzen.ifox.bean.Init;
 import com.arzen.ifox.setting.KeyConstants;
 import com.arzen.ifox.setting.UserSetting;
 import com.arzen.ifox.utils.CommonUtil;
-import com.arzen.ifox.utils.DynamicLibUtils;
 import com.arzen.ifox.utils.DynamicLibManager;
+import com.arzen.ifox.utils.DynamicLibUtils;
 import com.arzen.ifox.utils.MsgUtil;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
@@ -218,7 +225,7 @@ public abstract class iFox {
 		}
 		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_LOGIN_FRAGMENT);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); // 渠道id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
@@ -274,7 +281,7 @@ public abstract class iFox {
 		}
 		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_CHANGE_PASSWORD_FRAGMENT);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); // 渠道id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
@@ -335,7 +342,7 @@ public abstract class iFox {
 		}
 		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_PAY_FRAGMENT);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, "11111"); // 渠道id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
@@ -382,5 +389,78 @@ public abstract class iFox {
 	public static void setDynamicLibManager(DynamicLibManager jarUtil)
 	{
 		mDynamicLibManager = jarUtil;
+	}
+	
+	
+	private static HashMap<String, String> mConfigs = new HashMap<String, String>();
+	
+	
+	/**
+	 * 渠道号
+	 * 
+	 * @return
+	 */
+	public static String getChannelId(Context context) {
+		return getConfig(context,"channel_id");
+	}
+	
+	private static String getConfig(Context context,String key) {
+		// return res;
+		if (mConfigs.size() == 0) {
+			initConfig(context);
+		}
+		return mConfigs.get(key);
+	}
+	
+	private static void initConfig(Context context) {
+		String configs = readFile(context,"config.txt");
+		if (!configs.equals("")) {
+			// File skynet_config.txt exists in assets directory
+			try {
+				JSONObject jo = new JSONObject(configs);
+				Iterator<?> keys = jo.keys();
+				while (keys.hasNext()) {
+					String key = keys.next().toString();
+					mConfigs.put(key, jo.getString(key));
+				}
+			} catch (JSONException e) {
+			}
+		}
+	}
+	
+	private static String readFile(Context context,String fileName) {
+		if (TextUtils.isEmpty(fileName)) {
+			return "";
+		}
+		InputStream is = null;
+		ByteArrayOutputStream baos = null;
+		try {
+			is = context.getAssets().open(fileName);
+			byte[] buffer = new byte[1024];
+			int readBytes = is.read(buffer);
+			baos = new ByteArrayOutputStream(1024);
+			while (0 < readBytes) {
+				baos.write(buffer, 0, readBytes);
+				readBytes = is.read(buffer);
+			}
+			String s = baos.toString();
+
+			return s;
+		} catch (IOException e) {
+		} finally {
+			if (null != is) {
+				try {
+					is.close();
+				} catch (IOException e) {
+				}
+			}
+			if (null != baos) {
+				try {
+					baos.close();
+				} catch (IOException e) {
+				}
+			}
+		}
+		return "";
 	}
 }

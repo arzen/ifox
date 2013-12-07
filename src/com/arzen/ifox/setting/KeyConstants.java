@@ -79,6 +79,11 @@ public class KeyConstants {
 	public static final String RECEIVER_RESULT_ACTION = "android.action.result.receiver";
 	
 	/**
+	 * 支付action
+	 */
+	public static final String RECEIVER_PAY_START_ACTION = "android.action.pay.start.receiver";
+	
+	/**
 	 * 结果回调action key
 	 */
 	public static final String RECEIVER_KEY_DISPOSE_ACTION = "disposeAction";
@@ -131,4 +136,28 @@ public class KeyConstants {
 	 * token
 	 */
 	public static final String SHARED_KEY_TOKEN = "token";
+	
+	/**
+	 * 支付方式 微派
+	 */
+	public static final int PAY_TYPE_WIIPAY = 1;
+	/**
+	 * 支付宝
+	 */
+	public static final int PAY_TYPE_ALIPAY = 2;
+	/**
+	 * 银联
+	 */
+	public static final int PAY_TYPE_UNIONPAY = 3;
+	
+	/**
+	 * intent 传递数据key ->支付方式
+	 */
+	public static String INTENT_DATA_KEY_PAY_TYPE = "payType";
+	/**
+	 * 创建订单action
+	 */
+	public static final String ACTION_CREATEORDER_ACTIVITY = "com.action.create.order.receiver";
+	
+	
 }
