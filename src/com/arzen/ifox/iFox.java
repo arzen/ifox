@@ -104,7 +104,7 @@ public abstract class iFox {
 
 									if (mDynamicLibManager != null) {
 										// 检查动态库是否有更新
-										checkUpdate(activity, gid, "cid", mDynamicLibManager.getmVertionCode());
+										checkUpdate(activity, gid, getChannelId(activity), mDynamicLibManager.getmVertionCode());
 									}
 									
 								} else {
