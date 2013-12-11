@@ -16,12 +16,16 @@ import android.util.Log;
 import dalvik.system.DexClassLoader;
 
 public class DynamicLibManager {
+	
+	/**
+	 * 动态库操作类
+	 */
+	private static DynamicLibManager mDynamicLibManager;
 
 	private static final String JARPATH = "";
-
+	public final static String DEX_FILE = "iFoxLib.apk";
 	private Context mContext;
 	public String mVertionCode = "";
-
 	public AssetManager mAssetManager;
 	public Resources mResources;
 	public Theme mTheme;
@@ -182,6 +186,53 @@ public class DynamicLibManager {
 			versionCode = String.valueOf(packageInfo.versionCode);
 		}
 		return versionCode;
+	}
+	
+	
+	/**
+	 * 初始化动态库资源
+	 */
+	public static void initDexResource(Activity activity) {
+		if (mDynamicLibManager == null)
+			mDynamicLibManager = new DynamicLibManager(activity);
+		// 初始化lib资源,导入资源,以便做到调用,lib apk 动态加载view
+		mDynamicLibManager.initIFoxLibResource(activity, DynamicLibManager.DEX_FILE);
+	}
+
+	/**
+	 * 初始化动态更新包资源 必须在setContentView前执行
+	 * 
+	 * @return
+	 */
+	public static DynamicLibManager initLibApkResource(Activity activity) {
+		if (activity == null) {
+			return null;
+		}
+		if (mDynamicLibManager == null)
+			mDynamicLibManager = new DynamicLibManager(activity);
+
+		// 初始化lib资源,导入资源,以便做到调用,lib apk 动态加载view
+		mDynamicLibManager.initIFoxLibResource(activity, DynamicLibManager.DEX_FILE);
+
+		return mDynamicLibManager;
+	}
+	
+	
+	/**
+	 * 获取jar控制类
+	 * 
+	 * @return
+	 */
+	public static DynamicLibManager getDynamicLibManager(Activity activity) {
+		if(mDynamicLibManager == null){
+			mDynamicLibManager = new DynamicLibManager(activity);
+		}
+		return mDynamicLibManager;
+	}
+	
+	public static void setDynamicLibManager(DynamicLibManager dynamicLibManager)
+	{
+		mDynamicLibManager = dynamicLibManager;
 	}
 
 	/**

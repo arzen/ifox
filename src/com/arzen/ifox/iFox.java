@@ -35,17 +35,10 @@ public abstract class iFox {
 
 	private static final String TAG = "IFox";
 	
-	public final static String DEX_FILE = "iFoxLib.apk";
 	/**
 	 * 当前游戏id
 	 */
 //	public static String GID = "";
-	/**
-	 * 动态库操作类
-	 */
-	private static DynamicLibManager mDynamicLibManager;
-	//是否初始化成功
-	private static boolean isInitSuccess = false;
 	
 
 	/**
@@ -96,15 +89,15 @@ public abstract class iFox {
 								// 如果返回成功
 								if (init.getCode() == HttpSetting.RESULT_CODE_OK) {
 									// 初始化dex resource资源
-									initDexResource(activity);
+									DynamicLibManager.initDexResource(activity);
 									// 设置当前游戏id
 									String gid = init.getData().getGid();
 									//保存当前gid
 									UserSetting.saveData(activity, gid);
 
-									if (mDynamicLibManager != null) {
+									if (DynamicLibManager.getDynamicLibManager(activity) != null) {
 										// 检查动态库是否有更新
-										checkUpdate(activity, gid, getChannelId(activity), mDynamicLibManager.getmVertionCode());
+										checkUpdate(activity, gid, getChannelId(activity), DynamicLibManager.getDynamicLibManager(activity).getmVertionCode());
 									}
 									
 								} else {
@@ -129,7 +122,7 @@ public abstract class iFox {
 	 * @param cid 渠道id
 	 * @param currentVertion 当前包下的版本号
 	 */
-	public static void checkUpdate(final Activity activity,String gid,String cid,String currentVersion)
+	private static void checkUpdate(final Activity activity,String gid,String cid,String currentVersion)
 	{
 		Log.d(TAG, "start check update!");
 		HttpIfoxApi.requestDynamicUpdateData(activity, gid, cid, currentVersion, new OnRequestListener() {
@@ -158,33 +151,7 @@ public abstract class iFox {
 		});
 	}
 
-	/**
-	 * 初始化动态库资源
-	 */
-	private static void initDexResource(Activity activity) {
-		if (mDynamicLibManager == null)
-			mDynamicLibManager = new DynamicLibManager(activity);
-		// 初始化lib资源,导入资源,以便做到调用,lib apk 动态加载view
-		mDynamicLibManager.initIFoxLibResource(activity, iFox.DEX_FILE);
-	}
-
-	/**
-	 * 初始化动态更新包资源 必须在setContentView前执行
-	 * 
-	 * @return
-	 */
-	public static DynamicLibManager initLibApkResource(Activity activity) {
-		if (activity == null) {
-			return null;
-		}
-		if (mDynamicLibManager == null)
-			mDynamicLibManager = new DynamicLibManager(activity);
-
-		// 初始化lib资源,导入资源,以便做到调用,lib apk 动态加载view
-		mDynamicLibManager.initIFoxLibResource(activity, iFox.DEX_FILE);
-
-		return mDynamicLibManager;
-	}
+	
 
 	/**
 	 * 打开登录界面
@@ -374,22 +341,7 @@ public abstract class iFox {
 
 	}
 
-	/**
-	 * 获取jar控制类
-	 * 
-	 * @return
-	 */
-	public static DynamicLibManager getDynamicLibManager(Activity activity) {
-		if(mDynamicLibManager == null){
-			mDynamicLibManager = new DynamicLibManager(activity);
-		}
-		return mDynamicLibManager;
-	}
 	
-	public static void setDynamicLibManager(DynamicLibManager jarUtil)
-	{
-		mDynamicLibManager = jarUtil;
-	}
 	
 	
 	private static HashMap<String, String> mConfigs = new HashMap<String, String>();
@@ -400,7 +352,7 @@ public abstract class iFox {
 	 * 
 	 * @return
 	 */
-	public static String getChannelId(Context context) {
+	private static String getChannelId(Context context) {
 		return getConfig(context,"channel_id");
 	}
 	

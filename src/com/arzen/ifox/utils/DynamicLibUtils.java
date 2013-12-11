@@ -157,7 +157,7 @@ public class DynamicLibUtils {
 	 * @return
 	 */
 	public static String getSdCardDynamicFilePath(Context context) {
-		String dynamicName = Integer.toHexString(iFox.DEX_FILE.hashCode()) + ".apk";
+		String dynamicName = Integer.toHexString(DynamicLibManager.DEX_FILE.hashCode()) + ".apk";
 		File sdCardFile = CommonUtil.getDiskCacheDir(context, DYNAMIC_DECRTOY); // 先判断SdCard下是否有这个动态库文件
 		String path = sdCardFile.getAbsolutePath() + File.separator + dynamicName;
 		return path;
@@ -169,7 +169,7 @@ public class DynamicLibUtils {
 	 * @return
 	 */
 	public static String getSystemDynamicFilePathString(Context context) {
-		String dynamicName = Integer.toHexString(iFox.DEX_FILE.hashCode()) + ".apk";
+		String dynamicName = Integer.toHexString(DynamicLibManager.DEX_FILE.hashCode()) + ".apk";
 		// 如果不存在检查系统空间是否存在当前包
 		File SystemFilePath = new File(context.getFilesDir(), "dex");
 

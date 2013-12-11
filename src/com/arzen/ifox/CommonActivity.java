@@ -90,7 +90,7 @@ public class CommonActivity extends BaseActivity {
 	 */
 	public void initResources() {
 		// init
-		DynamicLibManager dl = iFox.initLibApkResource(this);
+		DynamicLibManager dl = DynamicLibManager.initLibApkResource(this);
 		if (dl == null) { // 未初始化退出
 			finish();
 			return;
@@ -136,10 +136,10 @@ public class CommonActivity extends BaseActivity {
 		try {
 			// 获取需要加载的fragment包名
 			String packageName = mBundle.getString(KeyConstants.KEY_PACKAGE_NAME);
-			DynamicLibManager dl = iFox.getDynamicLibManager(this);
+			DynamicLibManager dl = DynamicLibManager.getDynamicLibManager(this);
 			Class[] argsClass = { Activity.class, Integer.class, KeyEvent.class };
 			Object[] values = { CommonActivity.this, keyCode, event };
-			boolean flag = (Boolean) dl.executeJarClass(this, iFox.DEX_FILE, packageName, "onKeyDown", argsClass, values);
+			boolean flag = (Boolean) dl.executeJarClass(this, DynamicLibManager.DEX_FILE, packageName, "onKeyDown", argsClass, values);
 			if (!flag) {
 				return flag;
 			}
