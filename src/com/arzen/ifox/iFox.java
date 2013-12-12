@@ -381,7 +381,7 @@ public abstract class iFox {
 	}
 	
 	private static String readFile(Context context,String fileName) {
-		if (TextUtils.isEmpty(fileName)) {
+		if (TextUtils.isEmpty(fileName)) { 
 			return "";
 		}
 		InputStream is = null;
