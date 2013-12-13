@@ -34,12 +34,11 @@ import com.encore.libs.utils.NetWorkUtils;
 public abstract class iFox {
 
 	private static final String TAG = "IFox";
-	
+
 	/**
 	 * 当前游戏id
 	 */
-//	public static String GID = "";
-	
+	// public static String GID = "";
 
 	/**
 	 * 初始化
@@ -61,15 +60,14 @@ public abstract class iFox {
 			MsgUtil.msg(R.string.not_network, activity);
 			return;
 		}
-		//初始化应用信息,此步不同下面工作就无法进行
+		// 初始化应用信息,此步不同下面工作就无法进行
 		initAppInfo(activity, appKey, appSecrect);
 	}
-	
+
 	/**
 	 * 初始化应用信息
 	 */
-	private static void initAppInfo(final Activity activity, String appKey, String appSecrect)
-	{
+	private static void initAppInfo(final Activity activity, String appKey, String appSecrect) {
 		String packageName = CommonUtil.getPackageName(activity.getApplicationContext());
 		// 请求初始化信息
 		HttpIfoxApi.requestInitData(activity, packageName, appKey, appSecrect, new OnRequestListener() {
@@ -92,14 +90,14 @@ public abstract class iFox {
 									DynamicLibManager.initDexResource(activity);
 									// 设置当前游戏id
 									String gid = init.getData().getGid();
-									//保存当前gid
+									// 保存当前gid
 									UserSetting.saveData(activity, gid);
 
 									if (DynamicLibManager.getDynamicLibManager(activity) != null) {
 										// 检查动态库是否有更新
 										checkUpdate(activity, gid, getChannelId(activity), DynamicLibManager.getDynamicLibManager(activity).getmVertionCode());
 									}
-									
+
 								} else {
 									MsgUtil.msg(init.getMsg(), activity);
 								}
@@ -114,19 +112,21 @@ public abstract class iFox {
 			}
 		});
 	}
-	
+
 	/**
-	 * 检查动态库是否有更新
-	 * 如果有更新,并在wifi网络下,自动下载动态库
-	 * @param gid 游戏id
-	 * @param cid 渠道id
-	 * @param currentVertion 当前包下的版本号
+	 * 检查动态库是否有更新 如果有更新,并在wifi网络下,自动下载动态库
+	 * 
+	 * @param gid
+	 *            游戏id
+	 * @param cid
+	 *            渠道id
+	 * @param currentVertion
+	 *            当前包下的版本号
 	 */
-	private static void checkUpdate(final Activity activity,String gid,String cid,String currentVersion)
-	{
+	private static void checkUpdate(final Activity activity, String gid, String cid, String currentVersion) {
 		Log.d(TAG, "start check update!");
 		HttpIfoxApi.requestDynamicUpdateData(activity, gid, cid, currentVersion, new OnRequestListener() {
-			
+
 			@Override
 			public void onResponse(final String url, final int state, final Object result, final int type) {
 				// TODO Auto-generated method stub
@@ -135,9 +135,12 @@ public abstract class iFox {
 					// 如果返回成功
 					if (dynamicUpdate.getCode() == HttpSetting.RESULT_CODE_OK) {
 						DynamicData data = dynamicUpdate.getData();
-						String latest =  data.getLatest();
-						if(latest.equals("false") && !data.getUrl().equals("")){ //false 有新版本  true 没新版本
-							DynamicLibUtils.downloadNewDynamicLib(activity.getApplicationContext(),data.getUrl()); //下载动态库
+						String latest = data.getLatest();
+						if (latest.equals("false") && !data.getUrl().equals("")) { // false
+																					// 有新版本
+																					// true
+																					// 没新版本
+							DynamicLibUtils.downloadNewDynamicLib(activity.getApplicationContext(), data.getUrl()); // 下载动态库
 						}
 					} else {
 						MsgUtil.msg(dynamicUpdate.getMsg(), activity);
@@ -150,8 +153,6 @@ public abstract class iFox {
 			}
 		});
 	}
-
-	
 
 	/**
 	 * 打开登录界面
@@ -175,17 +176,17 @@ public abstract class iFox {
 			}
 			return;
 		}
-		
+
 		String gid = UserSetting.getGID(activity);
-		if(gid.equals("")){
+		if (gid.equals("")) {
 			MsgUtil.msg("未初始化!", activity);
 			return;
 		}
-		//设置登录回调
+		// 设置登录回调
 		BaseActivity.setLoginListener(listener);
-		//获得当前token
+		// 获得当前token
 		String token = UserSetting.getToken(activity.getApplicationContext());
-		
+
 		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
 		if (bundle == null) {
 			bundle = new Bundle();
@@ -213,11 +214,16 @@ public abstract class iFox {
 		public void onCancel();
 
 	}
+
 	/**
 	 * 修改密码
-	 * @param activity 上下文
-	 * @param bundle 必须含有 key = 'token' 的值
-	 * @param listener 修改密码回调
+	 * 
+	 * @param activity
+	 *            上下文
+	 * @param bundle
+	 *            必须含有 key = 'token' 的值
+	 * @param listener
+	 *            修改密码回调
 	 */
 	public static void changePassword(final Activity activity, Bundle bundle, final ChangePasswordListener listener) {
 		if (activity == null || listener == null) {
@@ -231,17 +237,16 @@ public abstract class iFox {
 		}
 		String token = UserSetting.getToken(activity.getApplicationContext());
 		String gid = UserSetting.getGID(activity.getApplicationContext());
-		if(gid.equals("")){
+		if (gid.equals("")) {
 			MsgUtil.msg("未初始化!", activity);
 			return;
-		}else if(token.equals("")){
+		} else if (token.equals("")) {
 			MsgUtil.msg("未登录!", activity);
 			return;
 		}
-		
-		
+
 		BaseActivity.setChangePasswordListener(listener);
-		
+
 		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
 		if (bundle == null) {
 			bundle = new Bundle();
@@ -258,7 +263,8 @@ public abstract class iFox {
 		/**
 		 * 修改成功的回调
 		 * 
-		 * @param bundle 回调参数
+		 * @param bundle
+		 *            回调参数
 		 */
 		public void onSuccess();
 
@@ -268,7 +274,6 @@ public abstract class iFox {
 		public void onCancel();
 
 	}
-	
 
 	/**
 	 * 打开支付界面
@@ -292,17 +297,17 @@ public abstract class iFox {
 			}
 			return;
 		}
-		
+
 		String gid = UserSetting.getGID(activity);
-		if(gid.equals("")){
+		if (gid.equals("")) {
 			MsgUtil.msg("未初始化!", activity);
 			return;
 		}
 		// 获得当前token
 		String token = UserSetting.getToken(activity.getApplicationContext());
-		//设置支付回调接口
+		// 设置支付回调接口
 		BaseActivity.setPayCallBackListener(listener);
-		
+
 		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
 		if (bundle == null) {
 			bundle = new Bundle();
@@ -341,31 +346,49 @@ public abstract class iFox {
 
 	}
 
-	
-	
-	
+	public static void TopPage(final Activity activity) {
+		if (activity == null) {
+			return;
+		}
+
+		String gid = UserSetting.getGID(activity);
+		if (gid.equals("")) {
+			MsgUtil.msg("未初始化!", activity);
+			return;
+		}
+		// 获得当前token
+		String token = UserSetting.getToken(activity.getApplicationContext());
+		
+		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
+		Bundle bundle = new Bundle();
+		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_TOP_FRAGMENT);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
+		intent.putExtras(bundle);
+		activity.startActivity(intent);
+	}
+
 	private static HashMap<String, String> mConfigs = new HashMap<String, String>();
-	
-	
+
 	/**
 	 * 渠道号
 	 * 
 	 * @return
 	 */
 	private static String getChannelId(Context context) {
-		return getConfig(context,"channel_id");
+		return getConfig(context, "channel_id");
 	}
-	
-	private static String getConfig(Context context,String key) {
+
+	private static String getConfig(Context context, String key) {
 		// return res;
 		if (mConfigs.size() == 0) {
 			initConfig(context);
 		}
 		return mConfigs.get(key);
 	}
-	
+
 	private static void initConfig(Context context) {
-		String configs = readFile(context,"config.txt");
+		String configs = readFile(context, "config.txt");
 		if (!configs.equals("")) {
 			// File skynet_config.txt exists in assets directory
 			try {
@@ -379,9 +402,9 @@ public abstract class iFox {
 			}
 		}
 	}
-	
-	private static String readFile(Context context,String fileName) {
-		if (TextUtils.isEmpty(fileName)) { 
+
+	private static String readFile(Context context, String fileName) {
+		if (TextUtils.isEmpty(fileName)) {
 			return "";
 		}
 		InputStream is = null;

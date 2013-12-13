@@ -21,6 +21,11 @@ public class KeyConstants {
 	public static final String PKG_CHANGE_PASSWORD_FRAGMENT = "com.arzen.iFoxLib.fragment.ChangePasswordFragment";
 	
 	/**
+	 * 排行榜页面
+	 */
+	public static final String PKG_TOP_FRAGMENT = "com.arzen.iFoxLib.fragment.TopFragment";
+	
+	/**
 	 * 公用activty action
 	 */
 	public static final String ACTION_COMMON_ACTIVITY = "com.action.common.activty";

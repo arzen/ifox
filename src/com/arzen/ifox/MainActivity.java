@@ -21,6 +21,7 @@ public class MainActivity extends Activity {
 	private Button mBtnPay;
 	private Button mBtnLogin;
 	private Button mBtnChangePassword;
+	private Button mBtnTop;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -36,6 +37,9 @@ public class MainActivity extends Activity {
 		
 		mBtnChangePassword = (Button) findViewById(R.id.btnChangePassword);
 		mBtnChangePassword.setOnClickListener(mOnClickListener);
+		
+		mBtnTop = (Button) findViewById(R.id.btnTop);
+		mBtnTop.setOnClickListener(mOnClickListener);
 
 		iFox.init(this, null, null);
 	
@@ -118,7 +122,7 @@ public class MainActivity extends Activity {
 					}
 				});
 				break;
-			default:
+			case R.id.btnTop:
 				break;
 			}
 		}
