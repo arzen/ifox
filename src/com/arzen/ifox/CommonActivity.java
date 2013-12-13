@@ -3,11 +3,13 @@ package com.arzen.ifox;
 import java.util.Map;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
@@ -31,6 +33,8 @@ import com.arzen.ifox.utils.MsgUtil;
 import com.bx.pay.ApkUpdate;
 import com.bx.pay.ApkUpdate.ApkUpdateCallback;
 import com.encore.libs.utils.Log;
+import com.unionpay.UPPayAssistEx;
+import com.unionpay.uppay.PayActivity;
 
 import dalvik.system.DexClassLoader;
 
@@ -188,16 +192,25 @@ public class CommonActivity extends BaseActivity {
 					case KeyConstants.PAY_TYPE_WIIPAY:
 						toWayPay();
 						break;
+					case KeyConstants.PAY_TYPE_UNIONPAY:
+						String tn = intent.getStringExtra(KeyConstants.INTENT_DATA_KEY_PAY_TN);
+						toUnionpay(tn);
+						break;
 					}
 				}
 			}
 		}
 	};
 
-	// 订单请求出错后重试次数
-	public int mReTryCreateOrderCount = 4;
-	// 微派支付工具类
-	private WayPay mWayPay;
+	/**
+	 * 银联支付
+	 * 
+	 * @param tn
+	 *            流水号
+	 */
+	public void toUnionpay(String tn) {
+		UPPayAssistEx.startPayByJAR(this, PayActivity.class, null, null, tn, "01"); // 00 正式 01测试
+	}
 
 	/**
 	 * 跳转微派支付
@@ -209,10 +222,7 @@ public class CommonActivity extends BaseActivity {
 			@Override
 			public void launch(Map<String, String> arg0) {
 				// TODO Auto-generated method stub
-				mReTryCreateOrderCount = 4;
-				if (mWayPay == null) {
-					mWayPay = new WayPay(mBundle);
-				}
+					WayPay mWayPay = new WayPay(mBundle);
 				Log.d("PayFragment", "way pay");
 				mWayPay.toPay(CommonActivity.this, "0001");
 			}
@@ -300,7 +310,7 @@ public class CommonActivity extends BaseActivity {
 		try {
 			unregisterReceiver(mBroadcastReceiver);
 			mBroadcastReceiver = null;
-			
+
 			unregisterReceiver(mPayBroadcastReceiver);
 			mPayBroadcastReceiver = null;
 		} catch (Exception e) {
@@ -310,7 +320,25 @@ public class CommonActivity extends BaseActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
-		super.onActivityResult(requestCode, resultCode, data);
+		/*************************************************
+		 * 
+		 * 步骤3：处理银联手机支付控件返回的支付结果
+		 * 
+		 ************************************************/
+		if(requestCode == 10){
+			if (data == null) {
+				return;
+			}
+
+			/*
+			 * 支付控件返回字符串:success、fail、cancel 分别代表支付成功，支付失败，支付取消
+			 */
+			String result = data.getExtras().getString("pay_result");
+			Intent intent = new Intent(KeyConstants.ACTION_PAY_RESULT_RECEIVER);
+			intent.putExtra(KeyConstants.INTENT_KEY_RESULT, result);
+			sendBroadcast(intent);
+		}
+		
 	}
 
 	@Override

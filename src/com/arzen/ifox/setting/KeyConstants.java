@@ -101,6 +101,12 @@ public class KeyConstants {
 	 */
 	public static final String RECEIVER_ACTION_CHANGE_PASSWORD = "android.receiver.action.changepassword";
 	
+	
+	/**
+	 * 支付结果action
+	 */
+	public static final String ACTION_PAY_RESULT_RECEIVER = "com.action.pay.result.receiver";
+	
 	/**
 	 * 结果key
 	 */
@@ -149,6 +155,11 @@ public class KeyConstants {
 	 * 银联
 	 */
 	public static final int PAY_TYPE_UNIONPAY = 3;
+	
+	/**
+	 * intent 传递数据key ->支付流水号
+	 */
+	public static String INTENT_DATA_KEY_PAY_TN = "tn";
 	
 	/**
 	 * intent 传递数据key ->支付方式
