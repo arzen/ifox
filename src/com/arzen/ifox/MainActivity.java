@@ -43,6 +43,7 @@ public class MainActivity extends Activity {
 
 		iFox.init(this, null, null);
 	
+		
 	}
 	
 	public OnClickListener mOnClickListener = new OnClickListener() {
@@ -123,6 +124,7 @@ public class MainActivity extends Activity {
 				});
 				break;
 			case R.id.btnTop:
+				iFox.TopPage(MainActivity.this);
 				break;
 			}
 		}
