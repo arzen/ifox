@@ -235,6 +235,7 @@ public abstract class iFox {
 			}
 			return;
 		}
+
 		String token = UserSetting.getToken(activity.getApplicationContext());
 		String gid = UserSetting.getGID(activity.getApplicationContext());
 		if (gid.equals("")) {
@@ -298,13 +299,15 @@ public abstract class iFox {
 			return;
 		}
 
-		String gid = UserSetting.getGID(activity);
+		String token = UserSetting.getToken(activity.getApplicationContext());
+		String gid = UserSetting.getGID(activity.getApplicationContext());
 		if (gid.equals("")) {
 			MsgUtil.msg("未初始化!", activity);
 			return;
+		} else if (token.equals("")) {
+			MsgUtil.msg("未登录!", activity);
+			return;
 		}
-		// 获得当前token
-		String token = UserSetting.getToken(activity.getApplicationContext());
 		// 设置支付回调接口
 		BaseActivity.setPayCallBackListener(listener);
 
@@ -358,6 +361,10 @@ public abstract class iFox {
 		}
 		// 获得当前token
 		String token = UserSetting.getToken(activity.getApplicationContext());
+		if(token.equals("")){
+			MsgUtil.msg("未登录", activity);
+			return;
+		}
 		
 		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
 		Bundle bundle = new Bundle();

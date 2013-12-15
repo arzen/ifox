@@ -285,7 +285,7 @@ public class CommonActivity extends BaseActivity {
 		String result = bundle.getString(KeyConstants.INTENT_KEY_RESULT);
 		String msg = bundle.getString(KeyConstants.INTENT_KEY_MSG);
 
-		Log.d(TAG, "mPayResultReceiver (result:" + result + " msg:" + msg + ")");
+//		Log.d(TAG, "mPayResultReceiver (result:" + result + " msg:" + msg + ")");
 
 		if (result == null) {
 			return;

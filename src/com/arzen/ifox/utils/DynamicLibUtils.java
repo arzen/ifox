@@ -55,24 +55,34 @@ public class DynamicLibUtils {
 			downloadPathString = getSystemDynamicFilePathString(context);
 		}
 		
-//		downloadUrl = "http://101.199.109.89/wsdl35.yunpan.cn/share.php?method=Share.download&fhash=dbd866ce7748ebe00331d420e2a02fd67ffe4475&xqid=282875528&fname=iFoxLib.apk&fsize=1962686&nid=13859665053993982&cqid=c3032dc23be3304e81d31956406904bb&st=d1ded37a0faf6067a92da11e45084caf&e=1386139357&dt=35.d31f20a51877bff73830105e8dc766f3";
+//		downloadUrl = "http://cdn.market.hiapk.com/data/upload/2013/12_13/19/com.baidu.video_194644.apk";
 		downloadUrl = "";
 		//当前是wifi环境,并且url等不能为空
 		if (NetWorkUtils.isWifiConnected(context) 
 				&& downloadUrl != null && !downloadUrl.equals("") 
 				&& downloadPathString != null && !downloadUrl.equals("")) {
 			
-			File file = new File(downloadPathString);
-			if(file.exists()){
-				file.delete();
+			String tmpPath = downloadPathString + "tmp";
+			final File downloadFile = new File(tmpPath);
+			if(downloadFile.exists()){
+				downloadFile.delete();
 			}
-			DownloadTask downloadTask = new DownloadTask(downloadUrl, downloadPathString); //下载
+			
+			final File file = new File(downloadPathString);
+			
+			
+			DownloadTask downloadTask = new DownloadTask(downloadUrl, tmpPath); //下载
 			downloadTask.setOnDownloadListener(new OnDownloadListener() {
 				
 				@Override
 				public void onDownloadSuccess() {
 					// TODO Auto-generated method stub
 					Log.d(TAG, "onDownloadSuccess()");
+					if(file.exists()){
+						file.delete();
+					}
+					boolean isSuccess = downloadFile.renameTo(file);
+					Log.d(TAG, "isSuccess :" + isSuccess);
 				}
 				
 				@Override
