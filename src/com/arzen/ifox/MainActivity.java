@@ -9,6 +9,7 @@ import android.widget.Button;
 import com.arzen.ifox.iFox.ChangePasswordListener;
 import com.arzen.ifox.iFox.ChargeListener;
 import com.arzen.ifox.iFox.LoginListener;
+import com.arzen.ifox.iFox.OnCommitScoreCallBack;
 import com.arzen.ifox.setting.KeyConstants;
 import com.arzen.ifox.utils.MsgUtil;
 /**
@@ -43,7 +44,7 @@ public class MainActivity extends Activity {
 
 		iFox.init(this, null, null);
 	
-		
+		findViewById(R.id.btnCommit).setOnClickListener(mOnClickListener);
 	}
 	
 	public OnClickListener mOnClickListener = new OnClickListener() {
@@ -125,6 +126,23 @@ public class MainActivity extends Activity {
 				break;
 			case R.id.btnTop:
 				iFox.TopPage(MainActivity.this);
+				break;
+				
+			case R.id.btnCommit:
+				iFox.commitScore(MainActivity.this, 33939, new OnCommitScoreCallBack() {
+					
+					@Override
+					public void onSuccess() {
+						// TODO Auto-generated method stub
+						MsgUtil.msg("提交分数成功!", MainActivity.this);
+					}
+					
+					@Override
+					public void onFail(String msg) {
+						// TODO Auto-generated method stub
+						MsgUtil.msg("提交分数失败:" + msg, MainActivity.this);
+					}
+				});
 				break;
 			}
 		}

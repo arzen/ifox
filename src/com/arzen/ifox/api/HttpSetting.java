@@ -26,6 +26,8 @@ public class HttpSetting {
 	 */
 	private static String IFOX_UPDATE_URL = null;
 	
+	private static String IOFX_COMMIT_SCORE_URL = null;
+	
 	/**
 	 * 获取ifox init request url
 	 * @param activity
@@ -70,6 +72,23 @@ public class HttpSetting {
 			}
 		}
 		return IFOX_UPDATE_URL;
+	}
+	
+	public static String getCommitScoreUrl(Activity activity){
+		if(IOFX_COMMIT_SCORE_URL == null || IOFX_COMMIT_SCORE_URL.equals("")){
+			DynamicLibManager jarUtil = DynamicLibManager.getDynamicLibManager(activity);
+			Object result = null;
+//			if(jarUtil == null){
+//				jarUtil = new DynamicLibManager(activity);
+//				iFox.setDynamicLibManager(jarUtil);
+//			}
+			 //获取服务器地址
+			result = jarUtil.executeJarClass(activity,DynamicLibManager.DEX_FILE, KeyConstants.CLASSPATH_HTTP_SETTING, "getCommitScore", new Class[]{}, new Object[]{});
+			if(result != null && result instanceof String){
+				IOFX_COMMIT_SCORE_URL  = (String) result;
+			}
+		}
+		return IOFX_COMMIT_SCORE_URL;
 	}
 
 //	private static String SERVER_URL = "";

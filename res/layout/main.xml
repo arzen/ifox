@@ -38,5 +38,11 @@
         android:text="排行榜"
         />
     
+      <Button 
+        android:id="@+id/btnCommit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="提交分数"
+        />
 
 </LinearLayout>

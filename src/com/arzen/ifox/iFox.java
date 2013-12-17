@@ -18,6 +18,7 @@ import android.util.Log;
 
 import com.arzen.ifox.api.HttpIfoxApi;
 import com.arzen.ifox.api.HttpSetting;
+import com.arzen.ifox.bean.CommitScore;
 import com.arzen.ifox.bean.DynamicUpdate;
 import com.arzen.ifox.bean.DynamicUpdate.DynamicData;
 import com.arzen.ifox.bean.Init;
@@ -30,6 +31,7 @@ import com.arzen.ifox.utils.MsgUtil;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.utils.NetWorkUtils;
+import com.unionpay.uppay.widget.ac;
 
 public abstract class iFox {
 
@@ -349,6 +351,11 @@ public abstract class iFox {
 
 	}
 
+	/**
+	 * 打开排行榜页面
+	 * 
+	 * @param activity
+	 */
 	public static void TopPage(final Activity activity) {
 		if (activity == null) {
 			return;
@@ -361,11 +368,11 @@ public abstract class iFox {
 		}
 		// 获得当前token
 		String token = UserSetting.getToken(activity.getApplicationContext());
-		if(token.equals("")){
+		if (token.equals("")) {
 			MsgUtil.msg("未登录", activity);
 			return;
 		}
-		
+
 		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
 		Bundle bundle = new Bundle();
 		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_TOP_FRAGMENT);
@@ -373,6 +380,76 @@ public abstract class iFox {
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
+	}
+
+	/**
+	 * 提交分数
+	 * 
+	 * @param activity
+	 * @param score
+	 *            提交的分数
+	 * @param cb
+	 *            回调可传null
+	 */
+	public static void commitScore(final Activity activity, long score, final OnCommitScoreCallBack cb) {
+		if (activity == null) {
+			return;
+		}
+		String gid = UserSetting.getGID(activity);
+		if (gid.equals("")) {
+			MsgUtil.msg("未初始化!", activity);
+			return;
+		}
+		// 获得当前token
+		String token = UserSetting.getToken(activity.getApplicationContext());
+		if (token.equals("")) {
+			MsgUtil.msg("未登录", activity);
+			return;
+		}
+
+		HttpIfoxApi.commitScore(activity, gid, 0, score, token, new OnRequestListener() {
+
+			@Override
+			public void onResponse(final String url, final int state, final Object result, final int type) {
+				// TODO Auto-generated method stub
+				activity.runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof CommitScore) {
+							CommitScore commitScore = (CommitScore) result;
+							// 如果返回成功
+							if (commitScore.getCode() == HttpSetting.RESULT_CODE_OK) {
+								if (cb != null) {
+									cb.onSuccess();
+								}
+							} else {
+								if (cb != null) {
+									cb.onFail(commitScore.getMsg());
+								}
+							}
+						} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
+							Log.d(TAG, "check update time out");
+							if (cb != null) {
+								cb.onFail("请求超时!");
+							}
+						} else { // 请求失败
+							if (cb != null) {
+								cb.onFail("提交失败,检查网络!");
+							}
+						}
+					}
+				});
+
+			}
+		});
+	}
+
+	public interface OnCommitScoreCallBack {
+		public void onSuccess();
+
+		public void onFail(String msg);
 	}
 
 	private static HashMap<String, String> mConfigs = new HashMap<String, String>();

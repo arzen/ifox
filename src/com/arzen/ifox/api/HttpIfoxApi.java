@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.arzen.ifox.bean.CommitScore;
 import com.arzen.ifox.bean.DynamicUpdate;
 import com.arzen.ifox.bean.Init;
 import com.encore.libs.http.HttpConnectManager;
@@ -21,7 +22,7 @@ import android.content.Context;
  * 
  */
 public class HttpIfoxApi {
-	
+
 	/**
 	 * 参数app_key
 	 */
@@ -48,7 +49,6 @@ public class HttpIfoxApi {
 	 * 参数版本号
 	 */
 	public static final String PARAM_VER = "ver";
-	
 
 	/**
 	 * 请求初始化信息,当前请求必须成功,如果返回失败,则没必要继续进行下一步工作
@@ -63,41 +63,75 @@ public class HttpIfoxApi {
 		if (checkUrlIsCorrect(url)) {
 
 			Map<String, Object> maps = new HashMap<String, Object>();
-			maps.put(PARAM_APP_KEY,app_key);
+			maps.put(PARAM_APP_KEY, app_key);
 			maps.put(PARAM_APP_SECRET, app_secret);
 			maps.put(PARAM_PACKAGE, packageName);
-			
+
 			String postParam = createParams(maps);
-			
+
 			Request request = new Request();
 			request.setUrl(url);
 			request.setParser(new JsonParser(Init.class));
 			request.setOnRequestListener(onRequestListener);
-			HttpConnectManager.getInstance(activity.getApplicationContext()).doPost(request,postParam);
+			HttpConnectManager.getInstance(activity.getApplicationContext()).doPost(request, postParam);
 		}
 	}
+
 	/**
 	 * 请求动态库更新内容
+	 * 
 	 * @param activity
-	 * @param gid 游戏id
-	 * @param cid 渠道id
-	 * @param version 当前动态库的版本号
+	 * @param gid
+	 *            游戏id
+	 * @param cid
+	 *            渠道id
+	 * @param version
+	 *            当前动态库的版本号
 	 */
-	public static void requestDynamicUpdateData(Activity activity, String gid, String cid, String version,OnRequestListener onRequestListener) {
+	public static void requestDynamicUpdateData(Activity activity, String gid, String cid, String version, OnRequestListener onRequestListener) {
 		String url = HttpSetting.getDynamicUpdateUrl(activity);
 		if (checkUrlIsCorrect(url)) {
 			Map<String, Object> maps = new HashMap<String, Object>();
-			maps.put(PARAM_GID,gid);
+			maps.put(PARAM_GID, gid);
 			maps.put(PARAM_CID, cid);
 			maps.put(PARAM_VER, version);
-			
+
 			String postParam = createParams(maps);
-			
+
 			Request request = new Request();
 			request.setUrl(url);
 			request.setParser(new JsonParser(DynamicUpdate.class));
 			request.setOnRequestListener(onRequestListener);
-			HttpConnectManager.getInstance(activity.getApplicationContext()).doPost(request,postParam);
+			HttpConnectManager.getInstance(activity.getApplicationContext()).doPost(request, postParam);
+		}
+	}
+
+	/**
+	 * 提交分数
+	 * 
+	 * @param gid
+	 * @param lid
+	 * @param socre
+	 * @param token
+	 * @param onRequestListener
+	 */
+	public static void commitScore(Activity activity, String gid, int lid, long score, String token, OnRequestListener onRequestListener) {
+		String url = HttpSetting.getCommitScoreUrl(activity);
+		if (checkUrlIsCorrect(url)) {
+			Map<String, Object> maps = new HashMap<String, Object>();
+			maps.put(PARAM_GID, gid);
+			maps.put("token", token);
+			maps.put("lid", lid);
+			maps.put("score", score);
+
+			String postParam = createParams(maps);
+
+			Request request = new Request();
+			request.setUrl(url);
+			request.setParser(new JsonParser(CommitScore.class));
+			request.setOnRequestListener(onRequestListener);
+			HttpConnectManager.getInstance(activity.getApplicationContext()).doPost(request, postParam);
+
 		}
 	}
 
@@ -113,7 +147,7 @@ public class HttpIfoxApi {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 创建参数
 	 * 
