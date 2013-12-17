@@ -1,6 +1,7 @@
 package com.arzen.ifox;
 
 import java.util.Map;
+import java.util.Random;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import com.arzen.ifox.iFox.ChangePasswordListener;
 import com.arzen.ifox.iFox.ChargeListener;
 import com.arzen.ifox.iFox.LoginListener;
+import com.arzen.ifox.download.DownloadManager;
 import com.arzen.ifox.pay.WayPay;
 import com.arzen.ifox.setting.KeyConstants;
 import com.arzen.ifox.setting.UserSetting;
@@ -87,6 +89,7 @@ public class CommonActivity extends BaseActivity {
 
 		registerReceiver(mBroadcastReceiver, new IntentFilter(KeyConstants.RECEIVER_RESULT_ACTION));
 		registerReceiver(mPayBroadcastReceiver, new IntentFilter(KeyConstants.RECEIVER_PAY_START_ACTION));
+		registerReceiver(mDownloadBroadcastReceiver, new IntentFilter(KeyConstants.RECEIVER_DOWNLOAD_ACTION));
 	}
 
 	/**
@@ -198,6 +201,21 @@ public class CommonActivity extends BaseActivity {
 						break;
 					}
 				}
+			}
+		}
+	};
+	
+	public BroadcastReceiver mDownloadBroadcastReceiver = new BroadcastReceiver(){
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// TODO Auto-generated method stub
+			if (intent != null && intent.getAction().equals(KeyConstants.RECEIVER_DOWNLOAD_ACTION)) {
+				String downloadUrl = intent.getStringExtra("downloadUrl");
+				String gameName = intent.getStringExtra("gameName");
+				int id = intent.getIntExtra("id", new Random().nextInt(9999));
+				
+				DownloadManager downloadManager = new DownloadManager();
+				downloadManager.downloadFile(getApplicationContext(), downloadUrl, gameName, id);
 			}
 		}
 	};
@@ -313,6 +331,9 @@ public class CommonActivity extends BaseActivity {
 
 			unregisterReceiver(mPayBroadcastReceiver);
 			mPayBroadcastReceiver = null;
+			
+			unregisterReceiver(mDownloadBroadcastReceiver);
+			mDownloadBroadcastReceiver = null;
 		} catch (Exception e) {
 		}
 	}

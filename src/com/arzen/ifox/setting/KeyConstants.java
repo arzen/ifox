@@ -89,6 +89,11 @@ public class KeyConstants {
 	public static final String RECEIVER_PAY_START_ACTION = "android.action.pay.start.receiver";
 	
 	/**
+	 * 下载action
+	 */
+	public static final String RECEIVER_DOWNLOAD_ACTION = "android.action.download.receiver";
+	
+	/**
 	 * 结果回调action key
 	 */
 	public static final String RECEIVER_KEY_DISPOSE_ACTION = "disposeAction";
