@@ -15,26 +15,8 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- 获取网络相关信息 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- 发送短信权限 不加会报“失败，请使用wap联网方式，在试一次” -->
-    <uses-permission android:name="android.permission.SEND_SMS" />
-    <!--  -->
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
-    <!-- <uses-permission android:name="android.permission.READ_SMS" /> -->
-    <uses-permission android:name="android.permission.RESTART_PACKAGES" />
-    <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
-    <uses-permission android:name="android.permission.WRITE_SMS" />
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_APN_SETTINGS" />
-    <uses-permission android:name="android.permission.MODIFY_PHONE_STATE" />
-    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
-    
-    <uses-permission android:name="android.permission.READ_CONTACTS" />  
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <!-- END 以上是SDK需要的权限 -->
     <application
