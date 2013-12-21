@@ -44,7 +44,14 @@ public class KeyConstants {
 	 * lib apk httpSetting 类
 	 */
 	public static String CLASSPATH_HTTP_SETTING = "com.arzen.iFoxLib.api.HttpSetting";
-
+	/**
+	 * intent 传递数据key ->登录后的clientId
+	 */
+	public static String INTENT_DATA_KEY_CLIENTID = "clientId";
+	/**
+	 * intent 传递数据key ->登录后的clientSecret
+	 */
+	public static String INTENT_DATA_KEY_CLIENTSECRET = "clientSecret";
 	/**
 	 * intent 传递数据key ->gid游戏id
 	 */
@@ -148,6 +155,7 @@ public class KeyConstants {
 	 * key gid
 	 */
 	public static final String SHARED_KEY_GID  ="game_gid";
+	public static final String SHARED_KEY_SOCRE  ="score";
 	/**
 	 * token
 	 */

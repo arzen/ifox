@@ -23,6 +23,9 @@ public class MainActivity extends Activity {
 	private Button mBtnLogin;
 	private Button mBtnChangePassword;
 	private Button mBtnTop;
+	
+	private String key  = "313121500165700120";
+	private String appSecrect = "db0938b04d97466b8a5f7ececff681a9052ac8479";
 
 	/** Called when the activity is first created. */
 	@Override
@@ -42,7 +45,7 @@ public class MainActivity extends Activity {
 		mBtnTop = (Button) findViewById(R.id.btnTop);
 		mBtnTop.setOnClickListener(mOnClickListener);
 
-		iFox.init(this, null, null);
+		iFox.init(this, key, appSecrect);
 	
 		findViewById(R.id.btnCommit).setOnClickListener(mOnClickListener);
 	}
@@ -58,7 +61,7 @@ public class MainActivity extends Activity {
 				bundle.putString(KeyConstants.INTENT_DATA_KEY_EXTRA, "sn=0668!!!&role=梁叉叉");
 				bundle.putInt(KeyConstants.INTENT_DATA_KEY_PID, 3668);
 				bundle.putFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT, 200f); //单位分 
-				iFox.chargePage(MainActivity.this, bundle, new ChargeListener() {
+				iFox.chargePage(MainActivity.this, key, appSecrect, bundle, new ChargeListener() {
 					
 					@Override
 					public void onSuccess(Bundle bundle) {
@@ -91,7 +94,7 @@ public class MainActivity extends Activity {
 				});
 				break;
 			case R.id.btnLogin:
-				iFox.loginPage(MainActivity.this, null, new LoginListener() {
+				iFox.loginPage(MainActivity.this, key, appSecrect, null, new LoginListener() {
 					
 					@Override
 					public void onSuccess(Bundle bundle) {
@@ -109,7 +112,7 @@ public class MainActivity extends Activity {
 				break;
 			case R.id.btnChangePassword:
 				
-				iFox.changePassword(MainActivity.this, null, new ChangePasswordListener() {
+				iFox.changePassword(MainActivity.this, key, appSecrect, null, new ChangePasswordListener() {
 					
 					@Override
 					public void onSuccess() {
@@ -125,7 +128,7 @@ public class MainActivity extends Activity {
 				});
 				break;
 			case R.id.btnTop:
-				iFox.TopPage(MainActivity.this);
+				iFox.TopPage(MainActivity.this, key, appSecrect);
 				break;
 				
 			case R.id.btnCommit:

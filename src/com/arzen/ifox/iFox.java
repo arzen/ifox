@@ -168,7 +168,7 @@ public abstract class iFox {
 	 * 
 	 */
 
-	public static void loginPage(final Activity activity, Bundle bundle, final LoginListener listener) {
+	public static void loginPage(final Activity activity, String appKey, String appSecrect, Bundle bundle, final LoginListener listener) {
 		if (activity == null || listener == null) {
 			try {
 				throw new Exception("context or listener is null!");
@@ -197,6 +197,8 @@ public abstract class iFox {
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, appKey);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, appSecrect);
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
 	}
@@ -227,7 +229,7 @@ public abstract class iFox {
 	 * @param listener
 	 *            修改密码回调
 	 */
-	public static void changePassword(final Activity activity, Bundle bundle, final ChangePasswordListener listener) {
+	public static void changePassword(final Activity activity, String appKey, String appSecrect, Bundle bundle, final ChangePasswordListener listener) {
 		if (activity == null || listener == null) {
 			try {
 				throw new Exception("context or listener is null!");
@@ -258,6 +260,8 @@ public abstract class iFox {
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, appKey);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, appSecrect);
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
 	}
@@ -290,7 +294,7 @@ public abstract class iFox {
 	 * 
 	 */
 
-	public static void chargePage(final Activity activity, Bundle bundle, final ChargeListener listener) {
+	public static void chargePage(final Activity activity, String appKey, String appSecrect, Bundle bundle, final ChargeListener listener) {
 		if (activity == null || listener == null) {
 			try {
 				throw new Exception("上下文,与接口不能为空");
@@ -321,6 +325,8 @@ public abstract class iFox {
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, appKey);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, appSecrect);
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
 	}
@@ -356,7 +362,7 @@ public abstract class iFox {
 	 * 
 	 * @param activity
 	 */
-	public static void TopPage(final Activity activity) {
+	public static void TopPage(final Activity activity, String appKey, String appSecrect) {
 		if (activity == null) {
 			return;
 		}
@@ -378,6 +384,8 @@ public abstract class iFox {
 		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_TOP_FRAGMENT);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, appKey);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, appSecrect);
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
 	}
@@ -391,7 +399,7 @@ public abstract class iFox {
 	 * @param cb
 	 *            回调可传null
 	 */
-	public static void commitScore(final Activity activity, long score, final OnCommitScoreCallBack cb) {
+	public static void commitScore(final Activity activity, final long score, final OnCommitScoreCallBack cb) {
 		if (activity == null) {
 			return;
 		}
@@ -407,6 +415,11 @@ public abstract class iFox {
 			return;
 		}
 
+		long s = UserSetting.getScore(activity.getApplicationContext());
+		if (score < s) {
+			return;
+		}
+
 		HttpIfoxApi.commitScore(activity, gid, 0, score, token, new OnRequestListener() {
 
 			@Override
@@ -417,7 +430,9 @@ public abstract class iFox {
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
+
 						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof CommitScore) {
+							UserSetting.saveScore(activity.getApplicationContext(), score);
 							CommitScore commitScore = (CommitScore) result;
 							// 如果返回成功
 							if (commitScore.getCode() == HttpSetting.RESULT_CODE_OK) {

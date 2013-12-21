@@ -52,4 +52,15 @@ public class UserSetting {
 		SettingUtils settingUtils = new SettingUtils(context, KeyConstants.SHARED_NAME_USER, Context.MODE_PRIVATE);
 		return settingUtils;
 	}
+	
+	public static long getScore(Context context){
+		SettingUtils settingUtils = getSettingUtils(context);
+		return settingUtils.getLong(KeyConstants.SHARED_KEY_SOCRE, 0);
+	}
+	
+	public static void saveScore(Context context,long score){
+		SettingUtils settingUtils = getSettingUtils(context);
+		settingUtils.putLong(KeyConstants.SHARED_KEY_SOCRE, score);
+		settingUtils.commitOperate();
+	};
 }
