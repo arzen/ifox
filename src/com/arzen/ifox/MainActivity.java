@@ -6,8 +6,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
-import com.arzen.ifox.iFox.ChangePasswordListener;
 import com.arzen.ifox.iFox.ChargeListener;
+import com.arzen.ifox.iFox.InitCallBack;
 import com.arzen.ifox.iFox.LoginListener;
 import com.arzen.ifox.iFox.OnCommitScoreCallBack;
 import com.arzen.ifox.setting.KeyConstants;
@@ -45,7 +45,20 @@ public class MainActivity extends Activity {
 		mBtnTop = (Button) findViewById(R.id.btnTop);
 		mBtnTop.setOnClickListener(mOnClickListener);
 
-		iFox.init(this, key, appSecrect);
+		iFox.init(this, key, appSecrect,new InitCallBack() {
+			
+			@Override
+			public void onSuccess() {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onFail(String msg) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 	
 		findViewById(R.id.btnCommit).setOnClickListener(mOnClickListener);
 	}
@@ -59,9 +72,8 @@ public class MainActivity extends Activity {
 			case R.id.btnPay:
 				Bundle bundle = new Bundle();
 				bundle.putString(KeyConstants.INTENT_DATA_KEY_EXTRA, "sn=0668!!!&role=梁叉叉");
-				bundle.putInt(KeyConstants.INTENT_DATA_KEY_PID, 3668);
-				bundle.putFloat(KeyConstants.INTENT_DATA_KEY_AMOUNT, 200f); //单位分 
-				iFox.chargePage(MainActivity.this, key, appSecrect, bundle, new ChargeListener() {
+				bundle.putInt(KeyConstants.INTENT_DATA_KEY_PID, 333);
+				iFox.chargePage(MainActivity.this, bundle, new ChargeListener() {
 					
 					@Override
 					public void onSuccess(Bundle bundle) {
@@ -94,7 +106,7 @@ public class MainActivity extends Activity {
 				});
 				break;
 			case R.id.btnLogin:
-				iFox.loginPage(MainActivity.this, key, appSecrect, null, new LoginListener() {
+				iFox.loginPage(MainActivity.this, null, new LoginListener() {
 					
 					@Override
 					public void onSuccess(Bundle bundle) {
@@ -112,27 +124,27 @@ public class MainActivity extends Activity {
 				break;
 			case R.id.btnChangePassword:
 				
-				iFox.changePassword(MainActivity.this, key, appSecrect, null, new ChangePasswordListener() {
-					
-					@Override
-					public void onSuccess() {
-						// TODO Auto-generated method stub
-						MsgUtil.msg("chanPassword onSuccess():" , MainActivity.this);
-					}
-					
-					@Override
-					public void onCancel() {
-						// TODO Auto-generated method stub
-						MsgUtil.msg("chanPassword onCancel():" , MainActivity.this);
-					}
-				});
+//				iFox.changePassword(MainActivity.this, key, appSecrect, null, new ChangePasswordListener() {
+//					
+//					@Override
+//					public void onSuccess() {
+//						// TODO Auto-generated method stub
+//						MsgUtil.msg("chanPassword onSuccess():" , MainActivity.this);
+//					}
+//					
+//					@Override
+//					public void onCancel() {
+//						// TODO Auto-generated method stub
+//						MsgUtil.msg("chanPassword onCancel():" , MainActivity.this);
+//					}
+//				});
 				break;
 			case R.id.btnTop:
-				iFox.TopPage(MainActivity.this, key, appSecrect);
+				iFox.leaderboardPage(MainActivity.this);
 				break;
 				
 			case R.id.btnCommit:
-				iFox.commitScore(MainActivity.this, 33939, new OnCommitScoreCallBack() {
+				iFox.submitScore(MainActivity.this, 33939,0, new OnCommitScoreCallBack() {
 					
 					@Override
 					public void onSuccess() {

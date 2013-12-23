@@ -31,6 +31,7 @@ import com.arzen.ifox.utils.MsgUtil;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.utils.NetWorkUtils;
+import com.unionpay.mpay.utils.n;
 import com.unionpay.uppay.widget.ac;
 
 public abstract class iFox {
@@ -41,6 +42,10 @@ public abstract class iFox {
 	 * 当前游戏id
 	 */
 	// public static String GID = "";
+	
+	private static  String mAppKey = "";
+	
+	private static  String mAppSecrect = "";
 
 	/**
 	 * 初始化
@@ -53,23 +58,37 @@ public abstract class iFox {
 	 *            游戏的在平台中的app secrect
 	 * 
 	 */
-	public static void init(final Activity activity, String appKey, String appSecrect) {
-		if (activity == null) {
-			return;
+	public static void init(final Activity activity, String appKey, String appSecrect,InitCallBack cb) {
+		if (activity == null  || appKey==null || appSecrect == null || appKey.equals("") || appSecrect.equals("") || cb == null) {
+			throw new RuntimeException("appkey and appSecrect and InitCallBack 不能未空!");
 		}
 		boolean isHasNetWork = NetWorkUtils.isNetworkAvailable(activity.getApplicationContext());
 		if (!isHasNetWork) { // 没有网络
-			MsgUtil.msg(R.string.not_network, activity);
+			cb.onFail("没有网络");
 			return;
 		}
+		mAppKey = appKey;
+		mAppSecrect = appSecrect;
 		// 初始化应用信息,此步不同下面工作就无法进行
-		initAppInfo(activity, appKey, appSecrect);
+		initAppInfo(activity, appKey, appSecrect,cb);
+	}
+	
+	public static interface InitCallBack
+	{
+		/**
+		 * 初始化成功
+		 */
+		public void onSuccess();
+		/**
+		 * 初始化失败,必须重新调用初始化
+		 */
+		public void onFail(String msg);
 	}
 
 	/**
 	 * 初始化应用信息
 	 */
-	private static void initAppInfo(final Activity activity, String appKey, String appSecrect) {
+	private static void initAppInfo(final Activity activity, String appKey, String appSecrect,InitCallBack cb) {
 		String packageName = CommonUtil.getPackageName(activity.getApplicationContext());
 		// 请求初始化信息
 		HttpIfoxApi.requestInitData(activity, packageName, appKey, appSecrect, new OnRequestListener() {
@@ -168,7 +187,7 @@ public abstract class iFox {
 	 * 
 	 */
 
-	public static void loginPage(final Activity activity, String appKey, String appSecrect, Bundle bundle, final LoginListener listener) {
+	public static void loginPage(final Activity activity, Bundle bundle, final LoginListener listener) {
 		if (activity == null || listener == null) {
 			try {
 				throw new Exception("context or listener is null!");
@@ -197,8 +216,8 @@ public abstract class iFox {
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, appKey);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, appSecrect);
+//		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, appKey);
+//		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, appSecrect);
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
 	}
@@ -219,52 +238,52 @@ public abstract class iFox {
 
 	}
 
-	/**
-	 * 修改密码
-	 * 
-	 * @param activity
-	 *            上下文
-	 * @param bundle
-	 *            必须含有 key = 'token' 的值
-	 * @param listener
-	 *            修改密码回调
-	 */
-	public static void changePassword(final Activity activity, String appKey, String appSecrect, Bundle bundle, final ChangePasswordListener listener) {
-		if (activity == null || listener == null) {
-			try {
-				throw new Exception("context or listener is null!");
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return;
-		}
-
-		String token = UserSetting.getToken(activity.getApplicationContext());
-		String gid = UserSetting.getGID(activity.getApplicationContext());
-		if (gid.equals("")) {
-			MsgUtil.msg("未初始化!", activity);
-			return;
-		} else if (token.equals("")) {
-			MsgUtil.msg("未登录!", activity);
-			return;
-		}
-
-		BaseActivity.setChangePasswordListener(listener);
-
-		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
-		if (bundle == null) {
-			bundle = new Bundle();
-		}
-		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_CHANGE_PASSWORD_FRAGMENT);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, appKey);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, appSecrect);
-		intent.putExtras(bundle);
-		activity.startActivity(intent);
-	}
+//	/**
+//	 * 修改密码
+//	 * 
+//	 * @param activity
+//	 *            上下文
+//	 * @param bundle
+//	 *            必须含有 key = 'token' 的值
+//	 * @param listener
+//	 *            修改密码回调
+//	 */
+//	public static void changePassword(final Activity activity, String appKey, String appSecrect, Bundle bundle, final ChangePasswordListener listener) {
+//		if (activity == null || listener == null) {
+//			try {
+//				throw new Exception("context or listener is null!");
+//			} catch (Exception e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//			return;
+//		}
+//
+//		String token = UserSetting.getToken(activity.getApplicationContext());
+//		String gid = UserSetting.getGID(activity.getApplicationContext());
+//		if (gid.equals("")) {
+//			MsgUtil.msg("未初始化!", activity);
+//			return;
+//		} else if (token.equals("")) {
+//			MsgUtil.msg("未登录!", activity);
+//			return;
+//		}
+//
+//		BaseActivity.setChangePasswordListener(listener);
+//
+//		Intent intent = new Intent(KeyConstants.ACTION_COMMON_ACTIVITY);
+//		if (bundle == null) {
+//			bundle = new Bundle();
+//		}
+//		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_CHANGE_PASSWORD_FRAGMENT);
+//		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
+//		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
+//		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
+//		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, appKey);
+//		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, appSecrect);
+//		intent.putExtras(bundle);
+//		activity.startActivity(intent);
+//	}
 
 	public static interface ChangePasswordListener {
 		/**
@@ -294,7 +313,7 @@ public abstract class iFox {
 	 * 
 	 */
 
-	public static void chargePage(final Activity activity, String appKey, String appSecrect, Bundle bundle, final ChargeListener listener) {
+	public static void chargePage(final Activity activity, Bundle bundle, final ChargeListener listener) {
 		if (activity == null || listener == null) {
 			try {
 				throw new Exception("上下文,与接口不能为空");
@@ -325,8 +344,8 @@ public abstract class iFox {
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, appKey);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, appSecrect);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, mAppKey);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, mAppSecrect);
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
 	}
@@ -362,7 +381,7 @@ public abstract class iFox {
 	 * 
 	 * @param activity
 	 */
-	public static void TopPage(final Activity activity, String appKey, String appSecrect) {
+	public static void leaderboardPage(final Activity activity) {
 		if (activity == null) {
 			return;
 		}
@@ -384,22 +403,20 @@ public abstract class iFox {
 		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_TOP_FRAGMENT);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, appKey);
-		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, appSecrect);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, mAppKey);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, mAppSecrect);
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
 	}
 
 	/**
-	 * 提交分数
-	 * 
+	 * 提交排行榜分数
 	 * @param activity
-	 * @param score
-	 *            提交的分数
-	 * @param cb
-	 *            回调可传null
+	 * @param score 提交的分数
+	 * @param lid 需要提交的排行榜id
+	 * @param cb 回调
 	 */
-	public static void commitScore(final Activity activity, final long score, final OnCommitScoreCallBack cb) {
+	public static void submitScore(final Activity activity, final long score,final int lid, final OnCommitScoreCallBack cb) {
 		if (activity == null) {
 			return;
 		}
@@ -420,17 +437,17 @@ public abstract class iFox {
 			return;
 		}
 
-		HttpIfoxApi.commitScore(activity, gid, 0, score, token, new OnRequestListener() {
+		HttpIfoxApi.commitScore(activity, gid, lid, score, token, new OnRequestListener() {
 
 			@Override
 			public void onResponse(final String url, final int state, final Object result, final int type) {
 				// TODO Auto-generated method stub
+				if(activity == null) return;
 				activity.runOnUiThread(new Runnable() {
-
+					
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-
 						if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof CommitScore) {
 							UserSetting.saveScore(activity.getApplicationContext(), score);
 							CommitScore commitScore = (CommitScore) result;
@@ -456,7 +473,6 @@ public abstract class iFox {
 						}
 					}
 				});
-
 			}
 		});
 	}

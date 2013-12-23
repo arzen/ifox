@@ -23,7 +23,7 @@ public class DynamicLibManager {
 	private static DynamicLibManager mDynamicLibManager;
 
 	private static final String JARPATH = "";
-	public final static String DEX_FILE = "iFoxLib.apk";
+	public final static String DEX_FILE = "IFoxLib.apk";
 	private Context mContext;
 	public String mVertionCode = "";
 	public AssetManager mAssetManager;
