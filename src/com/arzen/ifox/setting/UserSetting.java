@@ -10,11 +10,22 @@ public class UserSetting {
 	 * 保存数据
 	 * @param gid
 	 */
-	public static void saveData(Context context,String gid){
+	public static void saveData(Context context,String gid,long time){
 		SettingUtils settingUtils = getSettingUtils(context);
 		settingUtils.putString(KeyConstants.SHARED_KEY_GID, gid);
+		settingUtils.putLong(KeyConstants.SHARED_KEY_TIME, time);
 		settingUtils.commitOperate();
 	};
+	
+	/**
+	 * 上次初始化保存的时间,
+	 * @param context
+	 */
+	public static long getInitTime(Context context){
+		SettingUtils settingUtils = getSettingUtils(context);
+		return settingUtils.getLong(KeyConstants.SHARED_KEY_TIME, 0);
+	}
+	
 	/**
 	 * 得到gid
 	 * @param context

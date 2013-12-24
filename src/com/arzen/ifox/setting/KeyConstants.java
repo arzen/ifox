@@ -155,6 +155,12 @@ public class KeyConstants {
 	 * key gid
 	 */
 	public static final String SHARED_KEY_GID  ="game_gid";
+	
+	/**
+	 * key gid
+	 */
+	public static final String SHARED_KEY_TIME  ="time";
+	
 	public static final String SHARED_KEY_SOCRE  ="score";
 	/**
 	 * token

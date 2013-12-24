@@ -50,13 +50,13 @@ public class MainActivity extends Activity {
 			@Override
 			public void onSuccess() {
 				// TODO Auto-generated method stub
-				
+				MsgUtil.msg("初始化成功", MainActivity.this);
 			}
 			
 			@Override
 			public void onFail(String msg) {
 				// TODO Auto-generated method stub
-				
+				MsgUtil.msg("初始化失败", MainActivity.this);
 			}
 		});
 	
@@ -121,23 +121,6 @@ public class MainActivity extends Activity {
 						MsgUtil.msg("login onCancel()", MainActivity.this);
 					}
 				});
-				break;
-			case R.id.btnChangePassword:
-				
-//				iFox.changePassword(MainActivity.this, key, appSecrect, null, new ChangePasswordListener() {
-//					
-//					@Override
-//					public void onSuccess() {
-//						// TODO Auto-generated method stub
-//						MsgUtil.msg("chanPassword onSuccess():" , MainActivity.this);
-//					}
-//					
-//					@Override
-//					public void onCancel() {
-//						// TODO Auto-generated method stub
-//						MsgUtil.msg("chanPassword onCancel():" , MainActivity.this);
-//					}
-//				});
 				break;
 			case R.id.btnTop:
 				iFox.leaderboardPage(MainActivity.this);
