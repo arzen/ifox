@@ -221,7 +221,7 @@ public class CommonActivity extends BaseActivity {
 	 *            流水号
 	 */
 	public void toUnionpay(String tn) {
-		UPPayAssistEx.startPayByJAR(this, PayActivity.class, null, null, tn, "01"); // 00 正式 01测试
+		UPPayAssistEx.startPayByJAR(this, PayActivity.class, null, null, tn, "00"); // 00 正式 01测试
 	}
 
 	/**
