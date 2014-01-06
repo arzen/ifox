@@ -86,6 +86,11 @@ public class KeyConstants {
 	public static String INTENT_DATA_KEY_ORDERID = "orderid";
 	
 	/**
+	 * 固定道具金额
+	 */
+	public static String INTENT_DATA_KEY_PROP_PRICE = "prop_price";
+	
+	/**
 	 * 结果回调action
 	 */
 	public static final String RECEIVER_RESULT_ACTION = "android.action.result.receiver";
