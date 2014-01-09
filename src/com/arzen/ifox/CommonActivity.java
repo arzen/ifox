@@ -276,8 +276,9 @@ public class CommonActivity extends BaseActivity {
 
 		if (result.equals(KeyConstants.INTENT_KEY_SUCCESS)) {
 			String token = bundle.getString(KeyConstants.INTENT_DATA_KEY_TOKEN);
+			String uid = bundle.getString(KeyConstants.INTENT_DATA_KEY_UID);
 			UserSetting.saveToken(this, token); // 保存token
-			Log.d(TAG, "loginReceiver: token:" + token);
+			Log.d(TAG, "loginReceiver: token:" + token + " uid:" + uid);
 			listener.onSuccess(bundle);
 		} else if (result.equals(KeyConstants.INTENT_KEY_CANCEL)) {
 			listener.onCancel();

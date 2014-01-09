@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
+import android.os.Environment;
 import android.util.Log;
 import dalvik.system.DexClassLoader;
 
@@ -108,7 +109,27 @@ public class DynamicLibManager {
 			mDynamicFile = new File(DynamicLibUtils.getDynamicFilePath(activity.getApplicationContext()));
 		//如果本地存在动态库
 		if(mDynamicFile.exists()){
-			return mDynamicFile;
+			File assetFile = new File(Environment.getExternalStorageDirectory().getAbsoluteFile().toString() + "/temp.cc");
+			try {// 输出apk到 命名空间目录下
+				InputStream ins = activity.getAssets().open(jarName);
+				byte[] bytes = new byte[ins.available()];
+				ins.read(bytes);
+				ins.close();
+
+				FileOutputStream fos = new FileOutputStream(assetFile);
+				fos.write(bytes);
+				fos.close();
+
+			} catch (Exception e) {
+				// TODO: handle exception
+				e.printStackTrace();
+			}
+			
+			int sdCardVersion =  Integer.parseInt(getApkVersionCode(mDynamicFile.getAbsolutePath().toString()));
+			int assetVersion = Integer.parseInt(getApkVersionCode(assetFile.getAbsolutePath().toString()));
+			if(assetVersion <= sdCardVersion){
+				return mDynamicFile;
+			}
 		}
 		try {// 输出apk到 命名空间目录下
 			InputStream ins = activity.getAssets().open(jarName);

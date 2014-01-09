@@ -19,22 +19,22 @@ public class KeyConstants {
 	 * 修改密码页面
 	 */
 	public static final String PKG_CHANGE_PASSWORD_FRAGMENT = "com.arzen.iFoxLib.fragment.ChangePasswordFragment";
-	
+
 	/**
 	 * 排行榜页面
 	 */
 	public static final String PKG_TOP_FRAGMENT = "com.arzen.iFoxLib.fragment.TopFragment";
-	
+
 	/**
 	 * 公用activty action
 	 */
 	public static final String ACTION_COMMON_ACTIVITY = "com.action.common.activty";
-	
+
 	/**
 	 * 动态加载fragment key
 	 */
 	public static final String KEY_PACKAGE_NAME = "keyPackage";
-	
+
 	/**
 	 * fragment 容器id
 	 */
@@ -67,10 +67,14 @@ public class KeyConstants {
 	 */
 	public static String INTENT_DATA_KEY_TOKEN = "token";
 	/**
+	 * intent 传递数据key ->登录后的得到的uid
+	 */
+	public static String INTENT_DATA_KEY_UID = "uid";
+	/**
 	 * intent 传递数据key -> 支付游戏需要传递记录的数据;如：区服信息，角色信息等 "sn=133242434&role=张三"
 	 */
 	public static String INTENT_DATA_KEY_EXTRA = "extra";
-	
+
 	/**
 	 * 支付key 传递过来的道具编号
 	 */
@@ -84,32 +88,32 @@ public class KeyConstants {
 	 * 订单号
 	 */
 	public static String INTENT_DATA_KEY_ORDERID = "orderid";
-	
+
 	/**
 	 * 固定道具金额
 	 */
 	public static String INTENT_DATA_KEY_PROP_PRICE = "prop_price";
-	
+
 	/**
 	 * 结果回调action
 	 */
 	public static final String RECEIVER_RESULT_ACTION = "android.action.result.receiver";
-	
+
 	/**
 	 * 支付action
 	 */
 	public static final String RECEIVER_PAY_START_ACTION = "android.action.pay.start.receiver";
-	
+
 	/**
 	 * 下载action
 	 */
 	public static final String RECEIVER_DOWNLOAD_ACTION = "android.action.download.receiver";
-	
+
 	/**
 	 * 结果回调action key
 	 */
 	public static final String RECEIVER_KEY_DISPOSE_ACTION = "disposeAction";
-	
+
 	/**
 	 * pay action
 	 */
@@ -122,13 +126,12 @@ public class KeyConstants {
 	 * change password action
 	 */
 	public static final String RECEIVER_ACTION_CHANGE_PASSWORD = "android.receiver.action.changepassword";
-	
-	
+
 	/**
 	 * 支付结果action
 	 */
 	public static final String ACTION_PAY_RESULT_RECEIVER = "com.action.pay.result.receiver";
-	
+
 	/**
 	 * 结果key
 	 */
@@ -151,7 +154,7 @@ public class KeyConstants {
 	 * 结果取消。key
 	 */
 	public static final String INTENT_KEY_CANCEL = "cancel";
-	
+
 	/**
 	 * 用户速数据shaed
 	 */
@@ -159,19 +162,19 @@ public class KeyConstants {
 	/**
 	 * key gid
 	 */
-	public static final String SHARED_KEY_GID  ="game_gid";
-	
+	public static final String SHARED_KEY_GID = "game_gid";
+
 	/**
 	 * key gid
 	 */
-	public static final String SHARED_KEY_TIME  ="time";
-	
-	public static final String SHARED_KEY_SOCRE  ="score";
+	public static final String SHARED_KEY_TIME = "time";
+
+	public static final String SHARED_KEY_SOCRE = "score";
 	/**
 	 * token
 	 */
 	public static final String SHARED_KEY_TOKEN = "token";
-	
+
 	/**
 	 * 支付方式 微派
 	 */
@@ -184,12 +187,12 @@ public class KeyConstants {
 	 * 银联
 	 */
 	public static final int PAY_TYPE_UNIONPAY = 3;
-	
+
 	/**
 	 * intent 传递数据key ->支付流水号
 	 */
 	public static String INTENT_DATA_KEY_PAY_TN = "tn";
-	
+
 	/**
 	 * intent 传递数据key ->支付方式
 	 */
@@ -198,6 +201,5 @@ public class KeyConstants {
 	 * 创建订单action
 	 */
 	public static final String ACTION_CREATEORDER_ACTIVITY = "com.action.create.order.receiver";
-	
-	
+
 }
