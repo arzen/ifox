@@ -28,6 +28,7 @@ import com.arzen.ifox.setting.KeyConstants;
 import com.arzen.ifox.setting.UserSetting;
 import com.arzen.ifox.utils.DynamicLibManager;
 import com.arzen.ifox.utils.MsgUtil;
+import com.baidu.mobstat.StatService;
 import com.encore.libs.utils.Log;
 import com.unionpay.UPPayAssistEx;
 import com.unionpay.uppay.PayActivity;
@@ -129,6 +130,16 @@ public class CommonActivity extends BaseActivity {
 		} catch (Exception e) {
 			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 		}
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+	}
+	
+	@Override
+	public void onPause() {
+		super.onPause();
 	}
 
 	@Override

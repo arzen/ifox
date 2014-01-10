@@ -28,11 +28,10 @@ import com.arzen.ifox.utils.CommonUtil;
 import com.arzen.ifox.utils.DynamicLibManager;
 import com.arzen.ifox.utils.DynamicLibUtils;
 import com.arzen.ifox.utils.MsgUtil;
+import com.baidu.mobstat.StatService;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.utils.NetWorkUtils;
-import com.unionpay.mpay.utils.n;
-import com.unionpay.uppay.widget.ac;
 
 public abstract class iFox {
 
@@ -72,6 +71,11 @@ public abstract class iFox {
 			listener.onFail("没有网络");
 			return;
 		}
+		
+		StatService.setAppChannel(activity, getChannelId(activity.getApplicationContext()), true);
+		
+		StatService.setDebugOn(true);
+		
 		mAppKey = appKey;
 		mAppSecrect = appSecrect;
 		// 初始化应用信息,此步不同下面工作就无法进行
