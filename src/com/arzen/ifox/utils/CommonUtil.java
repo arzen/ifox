@@ -6,6 +6,7 @@ import com.encore.libs.imagecache.Utils;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -152,5 +153,20 @@ public class CommonUtil {
 		// Before Froyo we need to construct the external cache dir ourselves
 		final String cacheDir = "/Android/data/" + context.getPackageName() + "/cache/";
 		return new File(Environment.getExternalStorageDirectory().getPath() + cacheDir);
+	}
+	
+	/**
+	 * 分享
+	 * @param context
+	 * @param title
+	 * @param text
+	 */
+	public static void shareText(Context context, String title, String text) {
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.setType("text/plain");
+		intent.putExtra(Intent.EXTRA_SUBJECT, title);
+		intent.putExtra(Intent.EXTRA_TEXT, text);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		context.startActivity(intent);// Intent.createChooser(intent, title)
 	}
 }

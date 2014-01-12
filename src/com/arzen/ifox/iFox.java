@@ -506,6 +506,14 @@ public abstract class iFox {
 			}
 		});
 	}
+	
+	/**
+	 * 分享
+	 * @param activity
+	 */
+	public static void share(Activity activity){
+		CommonUtil.shareText(activity, "分享", "");
+	}
 
 	public interface OnCommitScoreCallBack {
 		public void onSuccess();
