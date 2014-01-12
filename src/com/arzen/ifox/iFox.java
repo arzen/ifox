@@ -426,6 +426,7 @@ public abstract class iFox {
 		Bundle bundle = new Bundle();
 		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_TOP_FRAGMENT);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, mAppKey);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, mAppSecrect);
