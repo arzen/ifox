@@ -9,40 +9,41 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="游戏主界面" />
-    
-    <Button 
+
+    <Button
         android:id="@+id/btnPay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="支付!"
-        />
-    
-    <Button 
+        android:text="支付!" />
+
+    <Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="登录"
-        />
-    
-     <Button 
+        android:text="登录" />
+
+    <Button
         android:id="@+id/btnChangePassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="修改密码"
-        />
-     
-      <Button 
+        android:text="修改密码" />
+
+    <Button
         android:id="@+id/btnTop"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="排行榜"
-        />
-    
-      <Button 
+        android:text="排行榜" />
+
+    <Button
         android:id="@+id/btnCommit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="提交分数"
-        />
+        android:text="提交分数" />
+
+    <Button
+        android:id="@+id/btnShare"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="分享" />
 
 </LinearLayout>

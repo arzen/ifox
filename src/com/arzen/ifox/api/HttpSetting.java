@@ -8,119 +8,107 @@ import com.arzen.ifox.utils.DynamicLibManager;
 
 /**
  * http 设置类
+ * 
  * @author Encore.liang
- *
+ * 
  */
 public class HttpSetting {
 	/**
 	 * 请求返回码
 	 */
 	public static final int RESULT_CODE_OK = 200;
-	
+
 	/**
 	 * ifox init url
 	 */
-	private static  String IFOX_INIT = null;
+	private static String IFOX_INIT = null;
 	/**
 	 * ifox update url
 	 */
 	private static String IFOX_UPDATE_URL = null;
-	
-	private static String IOFX_COMMIT_SCORE_URL = null;
-	
+	/**
+	 * commit score url
+	 */
+	private static String IFOX_COMMIT_SCORE_URL = null;
+	/**
+	 * share url
+	 */
+	private static String IFOX_SHARE_URL = null;
 	/**
 	 * 获取ifox init request url
+	 * 
 	 * @param activity
 	 * @return
 	 */
-	public static String getInitUrl(Activity activity)
-	{
-		if(IFOX_INIT == null || IFOX_INIT.equals("")){
+	public static String getInitUrl(Activity activity) {
+		if (IFOX_INIT == null || IFOX_INIT.equals("")) {
 			DynamicLibManager jarUtil = DynamicLibManager.getDynamicLibManager(activity);
 			Object result = null;
-//			if(jarUtil == null){
-//				jarUtil = new DynamicLibManager(activity);
-//				iFox.setDynamicLibManager(jarUtil);
-//			}
-			 //获取服务器地址
-			result = jarUtil.executeJarClass(activity,DynamicLibManager.DEX_FILE, KeyConstants.CLASSPATH_HTTP_SETTING, "getIFoxInitUrl", new Class[]{}, new Object[]{});
-			if(result != null && result instanceof String){
-				IFOX_INIT  = (String) result;
+			// 获取服务器地址
+			result = jarUtil.executeJarClass(activity, DynamicLibManager.DEX_FILE, KeyConstants.CLASSPATH_HTTP_SETTING, "getIFoxInitUrl", new Class[] {}, new Object[] {});
+			if (result != null && result instanceof String) {
+				IFOX_INIT = (String) result;
 			}
 		}
 		return IFOX_INIT;
 	}
-	
+
 	/**
 	 * 获取ifox 动态库更新url
+	 * 
 	 * @param activity
 	 * @return
 	 */
-	public static String getDynamicUpdateUrl(Activity activity)
-	{
-		if(IFOX_UPDATE_URL == null || IFOX_UPDATE_URL.equals("")){
+	public static String getDynamicUpdateUrl(Activity activity) {
+		if (IFOX_UPDATE_URL == null || IFOX_UPDATE_URL.equals("")) {
 			DynamicLibManager jarUtil = DynamicLibManager.getDynamicLibManager(activity);
 			Object result = null;
-//			if(jarUtil == null){
-//				jarUtil = new DynamicLibManager(activity);
-//				iFox.setDynamicLibManager(jarUtil);
-//			}
-			 //获取服务器地址
-			result = jarUtil.executeJarClass(activity,DynamicLibManager.DEX_FILE, KeyConstants.CLASSPATH_HTTP_SETTING, "getDynamicUpdateUrl", new Class[]{}, new Object[]{});
-			if(result != null && result instanceof String){
-				IFOX_UPDATE_URL  = (String) result;
+			// 获取服务器地址
+			result = jarUtil.executeJarClass(activity, DynamicLibManager.DEX_FILE, KeyConstants.CLASSPATH_HTTP_SETTING, "getDynamicUpdateUrl", new Class[] {}, new Object[] {});
+			if (result != null && result instanceof String) {
+				IFOX_UPDATE_URL = (String) result;
 			}
 		}
 		return IFOX_UPDATE_URL;
 	}
-	
-	public static String getCommitScoreUrl(Activity activity){
-		if(IOFX_COMMIT_SCORE_URL == null || IOFX_COMMIT_SCORE_URL.equals("")){
+	/**
+	 * 获取提交分数URL
+	 * @param activity
+	 * @return
+	 */
+	public static String getCommitScoreUrl(Activity activity) {
+		if (IFOX_COMMIT_SCORE_URL == null || IFOX_COMMIT_SCORE_URL.equals("")) {
 			DynamicLibManager jarUtil = DynamicLibManager.getDynamicLibManager(activity);
 			Object result = null;
-//			if(jarUtil == null){
-//				jarUtil = new DynamicLibManager(activity);
-//				iFox.setDynamicLibManager(jarUtil);
-//			}
-			 //获取服务器地址
-			result = jarUtil.executeJarClass(activity,DynamicLibManager.DEX_FILE, KeyConstants.CLASSPATH_HTTP_SETTING, "getCommitScore", new Class[]{}, new Object[]{});
-			if(result != null && result instanceof String){
-				IOFX_COMMIT_SCORE_URL  = (String) result;
+			// 获取服务器地址
+			result = jarUtil.executeJarClass(activity, DynamicLibManager.DEX_FILE, KeyConstants.CLASSPATH_HTTP_SETTING, "getCommitScore", new Class[] {}, new Object[] {});
+			if (result != null && result instanceof String) {
+				IFOX_COMMIT_SCORE_URL = (String) result;
 			}
 		}
-		return IOFX_COMMIT_SCORE_URL;
+		return IFOX_COMMIT_SCORE_URL;
+	}
+	
+	
+	/**
+	 * 获取提交分数URL
+	 * @param activity
+	 * @return
+	 */
+	public static String getShareUrl(Activity activity) {
+		if (IFOX_COMMIT_SCORE_URL == null || IFOX_COMMIT_SCORE_URL.equals("")) {
+			DynamicLibManager jarUtil = DynamicLibManager.getDynamicLibManager(activity);
+			Object result = null;
+			// 获取服务器地址
+			result = jarUtil.executeJarClass(activity, 
+					DynamicLibManager.DEX_FILE, 
+					KeyConstants.CLASSPATH_HTTP_SETTING, 
+					"getShareUrl", new Class[] {}, new Object[] {});
+			if (result != null && result instanceof String) {
+				IFOX_COMMIT_SCORE_URL = (String) result;
+			}
+		}
+		return IFOX_COMMIT_SCORE_URL;
 	}
 
-//	private static String SERVER_URL = "";
-//	
-//	/**
-//	 * 获取服务器地址,从 lib apk下读取,以便更新修改
-//	 * @param activity
-//	 * @return
-//	 */
-//	public static String getServerUrl(Activity activity)
-//	{
-//		if(SERVER_URL == null || SERVER_URL.equals("")){
-//			JarUtil jarUtil = iFox.getJarUtil();
-//			Object result = null;
-//			if(jarUtil == null){
-//				jarUtil = new JarUtil(activity);
-//			}
-//			 //获取服务器地址
-//			result = jarUtil.executeJarClass(iFox.DEX_FILE, KeyConstants.CLASSPATH_HTTP_SETTING, "getServerUrl", new Class[]{}, new Object[]{});
-//			if(result != null && result instanceof String){
-//				setServerUrl((String) result);
-//			}
-//		}
-//		return SERVER_URL;
-//	}
-//	
-//	/**
-//	 * 设置服务器url
-//	 * @param serverUrl
-//	 */
-//	private static void setServerUrl(String serverUrl)
-//	{
-//		SERVER_URL = serverUrl;
-//	}
 }

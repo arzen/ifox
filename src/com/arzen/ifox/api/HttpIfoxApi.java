@@ -7,6 +7,7 @@ import java.util.Map;
 import com.arzen.ifox.bean.CommitScore;
 import com.arzen.ifox.bean.DynamicUpdate;
 import com.arzen.ifox.bean.Init;
+import com.arzen.ifox.bean.Share;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.http.Request;
@@ -129,6 +130,32 @@ public class HttpIfoxApi {
 			Request request = new Request();
 			request.setUrl(url);
 			request.setParser(new JsonParser(CommitScore.class));
+			request.setOnRequestListener(onRequestListener);
+			HttpConnectManager.getInstance(activity.getApplicationContext()).doPost(request, postParam);
+
+		}
+	}
+	
+	/**
+	 * 
+	 * @param activity
+	 * @param gid
+	 * @param token
+	 * @param onRequestListener
+	 */
+	public static void getShareMsg(Activity activity,String gid,String token, OnRequestListener onRequestListener){
+		String url = HttpSetting.getShareUrl(activity);
+		
+		if (checkUrlIsCorrect(url)) {
+			Map<String, Object> maps = new HashMap<String, Object>();
+			maps.put(PARAM_GID, gid);
+			maps.put("token", token);
+
+			String postParam = createParams(maps);
+
+			Request request = new Request();
+			request.setUrl(url);
+			request.setParser(new JsonParser(Share.class));
 			request.setOnRequestListener(onRequestListener);
 			HttpConnectManager.getInstance(activity.getApplicationContext()).doPost(request, postParam);
 

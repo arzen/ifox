@@ -20,6 +20,7 @@ import com.arzen.ifox.api.HttpIfoxApi;
 import com.arzen.ifox.api.HttpSetting;
 import com.arzen.ifox.bean.CommitScore;
 import com.arzen.ifox.bean.DynamicUpdate;
+import com.arzen.ifox.bean.Share;
 import com.arzen.ifox.bean.DynamicUpdate.DynamicData;
 import com.arzen.ifox.bean.Init;
 import com.arzen.ifox.setting.KeyConstants;
@@ -72,10 +73,12 @@ public abstract class iFox {
 			return;
 		}
 		
+		com.encore.libs.utils.Log.DEBUG = false;
+
 		StatService.setAppChannel(activity, getChannelId(activity.getApplicationContext()), true);
-		
-		StatService.setDebugOn(true);
-		
+
+		StatService.setDebugOn(false);
+
 		mAppKey = appKey;
 		mAppSecrect = appSecrect;
 		// 初始化应用信息,此步不同下面工作就无法进行
@@ -130,18 +133,20 @@ public abstract class iFox {
 											// 检查动态库是否有更新
 											checkUpdate(activity, gid, getChannelId(activity), DynamicLibManager.getDynamicLibManager(activity).getmVertionCode());
 										}
+										// 获得当前token
+										String token = UserSetting.getToken(activity.getApplicationContext());
+										//获取分享模版
+										madeShareMsg(activity, token, gid, false);
+										
 										cb.onSuccess();
 									} else {
 										cb.onFail(init.getMsg());
 										MsgUtil.msg(init.getMsg(), activity);
 									}
 								} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
-								 cb.onFail(activity.getString(R.string.time_out));
-								// MsgUtil.msg(R.string.time_out, activity);
+									cb.onFail(activity.getString(R.string.time_out));
 								} else { // 请求失败
 									cb.onFail(activity.getString(R.string.request_fail));
-									// MsgUtil.msg(R.string.request_fail,
-									// activity);
 								}
 							}
 						});
@@ -247,7 +252,9 @@ public abstract class iFox {
 	public static interface LoginListener {
 		/**
 		 * 登录成功的回调
-		 * @param bundle 回调参数
+		 * 
+		 * @param bundle
+		 *            回调参数
 		 */
 		public void onSuccess(Bundle bundle);
 
@@ -506,13 +513,78 @@ public abstract class iFox {
 			}
 		});
 	}
-	
+
 	/**
 	 * 分享
+	 * 
 	 * @param activity
 	 */
-	public static void share(Activity activity){
-		CommonUtil.shareText(activity, "分享", "");
+	public static void share(Activity activity) {
+
+		String gid = UserSetting.getGID(activity);
+		if (gid.equals("")) {
+			MsgUtil.msg("未初始化!", activity);
+			return;
+		}
+		// 获得当前token
+		String token = UserSetting.getToken(activity.getApplicationContext());
+		if (token.equals("")) {
+			MsgUtil.msg("未登录", activity);
+			return;
+		}
+
+		if (mShareMsg != null && !mShareMsg.equals("")) {
+			CommonUtil.shareText(activity, "分享", mShareMsg);
+		} else {
+			madeShareMsg(activity, token, gid, true);
+		}
+
+	}
+
+	private static String mShareMsg = null;
+
+	/**
+	 * 获取分享模版
+	 * 
+	 * @param activity
+	 * @param token
+	 * @param gid
+	 * @param isStartShare
+	 */
+	private static void madeShareMsg(final Activity activity, final String token, final String gid, final boolean isStartShare) {
+		if (token != null && gid != null && !token.equals("") && !gid.equals("")) {
+			HttpIfoxApi.getShareMsg(activity, gid, token, new OnRequestListener() {
+
+				@Override
+				public void onResponse(final String url, final int state, final Object result, final int type) {
+					// TODO Auto-generated method stub
+					if (activity == null)
+						return;
+					activity.runOnUiThread(new Runnable() {
+
+						@Override
+						public void run() {
+							// TODO Auto-generated method stub
+							if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Share) {
+								Share share = (Share) result;
+								mShareMsg = share.getData().getMsg();
+								if (isStartShare) {
+									CommonUtil.shareText(activity, "分享", mShareMsg);
+								}
+							} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
+								if (isStartShare) {
+									MsgUtil.msg("分享失败,请重试!", activity);
+								}
+							} else { // 请求失败
+								if (isStartShare) {
+									MsgUtil.msg("分享失败,请重试!", activity);
+								}
+							}
+						}
+					});
+				}
+			});
+		}
 	}
 
 	public interface OnCommitScoreCallBack {
