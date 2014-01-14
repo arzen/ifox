@@ -20,6 +20,7 @@ public class Init implements Serializable {
 
 	/**
 	 * 返回码
+	 * 
 	 * @return 200为成功 其他都代表出错
 	 */
 	public int getCode() {
@@ -29,8 +30,10 @@ public class Init implements Serializable {
 	public void setCode(int code) {
 		this.code = code;
 	}
+
 	/**
 	 * 出错后的出错信息
+	 * 
 	 * @return
 	 */
 	public String getMsg() {
@@ -40,8 +43,10 @@ public class Init implements Serializable {
 	public void setMsg(String msg) {
 		this.msg = msg;
 	}
+
 	/**
 	 * 成功后的返回内容
+	 * 
 	 * @return
 	 */
 	public InitData getData() {
@@ -55,6 +60,8 @@ public class Init implements Serializable {
 	public static class InitData implements Serializable {
 		private String gid;
 
+		private String alipay_notify_url;
+
 		/**
 		 * 游戏id
 		 * 
@@ -66,6 +73,14 @@ public class Init implements Serializable {
 
 		public void setGid(String gid) {
 			this.gid = gid;
+		}
+
+		public String getAlipay_notify_url() {
+			return alipay_notify_url;
+		}
+
+		public void setAlipay_notify_url(String alipay_notify_url) {
+			this.alipay_notify_url = alipay_notify_url;
 		}
 
 	}

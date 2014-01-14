@@ -1,6 +1,7 @@
 ﻿package com.arzen.ifox;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -73,11 +75,13 @@ public abstract class iFox {
 			return;
 		}
 		
-		com.encore.libs.utils.Log.DEBUG = false;
+		boolean debug = getDebugModel(activity.getApplicationContext());
+		
+		com.encore.libs.utils.Log.DEBUG = debug;
 
 		StatService.setAppChannel(activity, getChannelId(activity.getApplicationContext()), true);
 
-		StatService.setDebugOn(false);
+		StatService.setDebugOn(debug);
 
 		mAppKey = appKey;
 		mAppSecrect = appSecrect;
@@ -127,7 +131,7 @@ public abstract class iFox {
 										// 设置当前游戏id
 										String gid = init.getData().getGid();
 										// 保存当前gid
-										UserSetting.saveData(activity, gid, System.currentTimeMillis());
+										UserSetting.saveData(activity, gid, System.currentTimeMillis(),init.getData().getAlipay_notify_url());
 
 										if (DynamicLibManager.getDynamicLibManager(activity) != null) {
 											// 检查动态库是否有更新
@@ -377,6 +381,7 @@ public abstract class iFox {
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, mAppKey);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, mAppSecrect);
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_NOTIFY_URL, UserSetting.getNotifyUrl(activity.getApplicationContext()));
 		intent.putExtras(bundle);
 		activity.startActivity(intent);
 	}
@@ -592,8 +597,10 @@ public abstract class iFox {
 
 		public void onFail(String msg);
 	}
-
+	//配置文件
 	private static HashMap<String, String> mConfigs = new HashMap<String, String>();
+	//测试配置文件
+	private static HashMap<String, String> mTestConfigs = new HashMap<String, String>();
 
 	/**
 	 * 渠道号
@@ -611,9 +618,10 @@ public abstract class iFox {
 		}
 		return mConfigs.get(key);
 	}
+	
 
 	private static void initConfig(Context context) {
-		String configs = readFile(context, "config.txt");
+		String configs = readFile(context, "config.txt",true);
 		if (!configs.equals("")) {
 			// File skynet_config.txt exists in assets directory
 			try {
@@ -627,15 +635,20 @@ public abstract class iFox {
 			}
 		}
 	}
+	
 
-	private static String readFile(Context context, String fileName) {
+	private static String readFile(Context context, String fileName,boolean isAssetFile) {
 		if (TextUtils.isEmpty(fileName)) {
 			return "";
 		}
 		InputStream is = null;
 		ByteArrayOutputStream baos = null;
 		try {
-			is = context.getAssets().open(fileName);
+			if(isAssetFile){
+				is = context.getAssets().open(fileName);
+			}else{
+				is = new FileInputStream(fileName);
+			}
 			byte[] buffer = new byte[1024];
 			int readBytes = is.read(buffer);
 			baos = new ByteArrayOutputStream(1024);
@@ -663,4 +676,48 @@ public abstract class iFox {
 		}
 		return "";
 	}
+	
+	private static void initTestConfig(Context context) {
+		if( Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)){
+			String configs = readFile(context, Environment.getExternalStorageDirectory().getAbsolutePath() + "/config.txt",false);
+			if (!configs.equals("")) {
+				// File skynet_config.txt exists in assets directory
+				try {
+					JSONObject jo = new JSONObject(configs);
+					Iterator<?> keys = jo.keys();
+					while (keys.hasNext()) {
+						String key = keys.next().toString();
+						mTestConfigs.put(key, jo.getString(key));
+					}
+				} catch (JSONException e) {
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 模式
+	 * 
+	 * @return
+	 */
+	private static boolean getDebugModel(Context context) {
+		String debug = getTestConfig(context, "debug");
+		if(debug == null){
+			return false;
+		}
+		return Boolean.parseBoolean(debug);
+	}
+
+	private static String getTestConfig(Context context, String key) {
+		// return res;
+		if (mTestConfigs.size() == 0) {
+			initTestConfig(context);
+		}
+		if(mTestConfigs.size() == 0){
+			return null;
+		}
+		return mTestConfigs.get(key);
+	}
+	
+	
 }

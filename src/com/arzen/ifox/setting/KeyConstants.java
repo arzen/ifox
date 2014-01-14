@@ -52,6 +52,12 @@ public class KeyConstants {
 	 * intent 传递数据key ->登录后的clientSecret
 	 */
 	public static String INTENT_DATA_KEY_CLIENTSECRET = "clientSecret";
+	
+	/**
+	 * intent 传递数据key ->支付宝回调地址key
+	 */
+	public static String INTENT_DATA_KEY_NOTIFY_URL = "notifyUrl";
+	
 	/**
 	 * intent 传递数据key ->gid游戏id
 	 */
@@ -168,8 +174,14 @@ public class KeyConstants {
 	 * key gid
 	 */
 	public static final String SHARED_KEY_TIME = "time";
-
+	/**
+	 * 分数
+	 */
 	public static final String SHARED_KEY_SOCRE = "score";
+	/**
+	 * 支付宝回调地址
+	 */
+	public static final String SHARED_ALIPAY_NOTIFY_URL = "alipay_notify_url";
 	/**
 	 * token
 	 */

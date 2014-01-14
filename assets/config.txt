@@ -1,4 +1,4 @@
 {
-"channel_id":33333,
+"channel_id":"33333",
 "version_name":"V1.0 Beta"
 }

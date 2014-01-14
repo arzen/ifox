@@ -217,7 +217,7 @@ public class CommonActivity extends BaseActivity {
 			if (intent != null && intent.getAction().equals(KeyConstants.RECEIVER_DOWNLOAD_ACTION)) {
 				String downloadUrl = intent.getStringExtra("downloadUrl");
 				String gameName = intent.getStringExtra("gameName");
-				int id = intent.getIntExtra("id", new Random().nextInt(9999));
+				int id = intent.getIntExtra("id", new Random().nextInt(999999));
 				
 				DownloadManager downloadManager = new DownloadManager();
 				downloadManager.downloadFile(getApplicationContext(), downloadUrl, gameName, id);
