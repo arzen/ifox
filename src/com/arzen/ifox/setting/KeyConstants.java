@@ -67,6 +67,11 @@ public class KeyConstants {
 	 * intent 传递数据key ->cid 渠道id
 	 */
 	public static String INTENT_DATA_KEY_CID = "cid";
+	
+	/**
+	 * intent 传递数据key ->百度统计cid
+	 */
+	public static String INTENT_DATA_KEY_BAIDU_CID = "baidu_cid";
 
 	/**
 	 * intent 传递数据key ->登录后的token

@@ -8,6 +8,7 @@ import com.arzen.ifox.bean.CommitScore;
 import com.arzen.ifox.bean.DynamicUpdate;
 import com.arzen.ifox.bean.Init;
 import com.arzen.ifox.bean.Share;
+import com.arzen.ifox.utils.CommonUtil;
 import com.encore.libs.http.HttpConnectManager;
 import com.encore.libs.http.OnRequestListener;
 import com.encore.libs.http.Request;
@@ -38,6 +39,11 @@ public class HttpIfoxApi {
 	 * 参数package
 	 */
 	public static final String PARAM_PACKAGE = "package";
+	
+	/**
+	 * 参数udid
+	 */
+	public static final String PARAM_UDID = "udid";
 	/**
 	 * 参数游戏id
 	 */
@@ -67,6 +73,7 @@ public class HttpIfoxApi {
 			maps.put(PARAM_APP_KEY, app_key);
 			maps.put(PARAM_APP_SECRET, app_secret);
 			maps.put(PARAM_PACKAGE, packageName);
+			maps.put(PARAM_UDID, CommonUtil.getUUID(activity.getApplicationContext()));
 
 			String postParam = createParams(maps);
 

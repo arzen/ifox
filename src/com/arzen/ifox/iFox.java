@@ -13,6 +13,8 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.Environment;
 import android.text.TextUtils;
@@ -74,19 +76,44 @@ public abstract class iFox {
 			listener.onFail("没有网络");
 			return;
 		}
-		
+
+		/**
+		 * 获取sdcard下的配置文件,是否打开debug模式,默认关
+		 */
 		boolean debug = getDebugModel(activity.getApplicationContext());
-		
+		/**
+		 * 获取配置文件,切换测试服务器和正式服务器
+		 */
+		String serverUrl = getServerUrl(activity.getApplicationContext());
+		if (serverUrl != null){
+			HttpSetting.setServerUrl(activity, serverUrl);
+		}
+
 		com.encore.libs.utils.Log.DEBUG = debug;
-
-		StatService.setAppChannel(activity, getChannelId(activity.getApplicationContext()), true);
-
+		
+		//设置统计
+		StatService.setAppChannel(activity, getBaiduCid(activity), true);
 		StatService.setDebugOn(debug);
 
 		mAppKey = appKey;
 		mAppSecrect = appSecrect;
 		// 初始化应用信息,此步不同下面工作就无法进行
 		initAppInfo(activity, appKey, appSecrect, listener);
+	}
+	
+	public static String getBaiduCid(Activity activity)
+	{
+		PackageInfo info;
+		String channelId = getChannelId(activity.getApplicationContext());
+		String cid = channelId;
+		try {
+			info = activity.getPackageManager().getPackageInfo(activity.getPackageName(), 0);
+			cid =info.packageName + "-" + channelId;
+		} catch (NameNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+		return cid;
 	}
 
 	public static interface InitCallBack {
@@ -131,7 +158,7 @@ public abstract class iFox {
 										// 设置当前游戏id
 										String gid = init.getData().getGid();
 										// 保存当前gid
-										UserSetting.saveData(activity, gid, System.currentTimeMillis(),init.getData().getAlipay_notify_url());
+										UserSetting.saveData(activity, gid, System.currentTimeMillis(), init.getData().getAlipay_notify_url());
 
 										if (DynamicLibManager.getDynamicLibManager(activity) != null) {
 											// 检查动态库是否有更新
@@ -139,9 +166,9 @@ public abstract class iFox {
 										}
 										// 获得当前token
 										String token = UserSetting.getToken(activity.getApplicationContext());
-										//获取分享模版
+										// 获取分享模版
 										madeShareMsg(activity, token, gid, false);
-										
+
 										cb.onSuccess();
 									} else {
 										cb.onFail(init.getMsg());
@@ -246,6 +273,7 @@ public abstract class iFox {
 		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_LOGIN_FRAGMENT);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_BAIDU_CID, getBaiduCid(activity)); // 百度统计id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, mAppKey);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, mAppSecrect);
@@ -378,6 +406,7 @@ public abstract class iFox {
 		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_PAY_FRAGMENT);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_BAIDU_CID, getBaiduCid(activity)); // 百度统计id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, mAppKey);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, mAppSecrect);
@@ -439,6 +468,7 @@ public abstract class iFox {
 		bundle.putString(KeyConstants.KEY_PACKAGE_NAME, KeyConstants.PKG_TOP_FRAGMENT);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_GID, gid); // 游戏id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CID, getChannelId(activity.getApplicationContext())); // 渠道id
+		bundle.putString(KeyConstants.INTENT_DATA_KEY_BAIDU_CID, getBaiduCid(activity)); // 百度统计id
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_TOKEN, token);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTID, mAppKey);
 		bundle.putString(KeyConstants.INTENT_DATA_KEY_CLIENTSECRET, mAppSecrect);
@@ -571,10 +601,16 @@ public abstract class iFox {
 						public void run() {
 							// TODO Auto-generated method stub
 							if (state == HttpConnectManager.STATE_SUC && result != null && result instanceof Share) {
-								Share share = (Share) result;
-								mShareMsg = share.getData().getMsg();
-								if (isStartShare) {
-									CommonUtil.shareText(activity, "分享", mShareMsg);
+								try {
+									Share share = (Share) result;
+									mShareMsg = share.getData().getMsg();
+									if (isStartShare) {
+										CommonUtil.shareText(activity, "分享", mShareMsg);
+									}
+								} catch (Exception e) {
+									if (isStartShare) {
+										MsgUtil.msg("分享失败,请重试!", activity);
+									}
 								}
 							} else if (state == HttpConnectManager.STATE_TIME_OUT) { // 请求超时
 								if (isStartShare) {
@@ -597,9 +633,10 @@ public abstract class iFox {
 
 		public void onFail(String msg);
 	}
-	//配置文件
+
+	// 配置文件
 	private static HashMap<String, String> mConfigs = new HashMap<String, String>();
-	//测试配置文件
+	// 测试配置文件
 	private static HashMap<String, String> mTestConfigs = new HashMap<String, String>();
 
 	/**
@@ -618,10 +655,9 @@ public abstract class iFox {
 		}
 		return mConfigs.get(key);
 	}
-	
 
 	private static void initConfig(Context context) {
-		String configs = readFile(context, "config.txt",true);
+		String configs = readFile(context, "config.txt", true);
 		if (!configs.equals("")) {
 			// File skynet_config.txt exists in assets directory
 			try {
@@ -635,18 +671,17 @@ public abstract class iFox {
 			}
 		}
 	}
-	
 
-	private static String readFile(Context context, String fileName,boolean isAssetFile) {
+	private static String readFile(Context context, String fileName, boolean isAssetFile) {
 		if (TextUtils.isEmpty(fileName)) {
 			return "";
 		}
 		InputStream is = null;
 		ByteArrayOutputStream baos = null;
 		try {
-			if(isAssetFile){
+			if (isAssetFile) {
 				is = context.getAssets().open(fileName);
-			}else{
+			} else {
 				is = new FileInputStream(fileName);
 			}
 			byte[] buffer = new byte[1024];
@@ -676,10 +711,10 @@ public abstract class iFox {
 		}
 		return "";
 	}
-	
+
 	private static void initTestConfig(Context context) {
-		if( Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)){
-			String configs = readFile(context, Environment.getExternalStorageDirectory().getAbsolutePath() + "/config.txt",false);
+		if (Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED)) {
+			String configs = readFile(context, Environment.getExternalStorageDirectory().getAbsolutePath() + "/config.txt", false);
 			if (!configs.equals("")) {
 				// File skynet_config.txt exists in assets directory
 				try {
@@ -694,7 +729,7 @@ public abstract class iFox {
 			}
 		}
 	}
-	
+
 	/**
 	 * 模式
 	 * 
@@ -702,10 +737,15 @@ public abstract class iFox {
 	 */
 	private static boolean getDebugModel(Context context) {
 		String debug = getTestConfig(context, "debug");
-		if(debug == null){
+		if (debug == null) {
 			return false;
 		}
 		return Boolean.parseBoolean(debug);
+	}
+
+	public static String getServerUrl(Context context) {
+		String serverUrl = getTestConfig(context, "serverUrl");
+		return serverUrl;
 	}
 
 	private static String getTestConfig(Context context, String key) {
@@ -713,11 +753,10 @@ public abstract class iFox {
 		if (mTestConfigs.size() == 0) {
 			initTestConfig(context);
 		}
-		if(mTestConfigs.size() == 0){
+		if (mTestConfigs.size() == 0) {
 			return null;
 		}
 		return mTestConfigs.get(key);
 	}
-	
-	
+
 }

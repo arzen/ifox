@@ -12,6 +12,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
 import android.os.StatFs;
+import android.provider.Settings;
+import android.telephony.TelephonyManager;
 
 public class CommonUtil {
 	/**
@@ -168,5 +170,26 @@ public class CommonUtil {
 		intent.putExtra(Intent.EXTRA_TEXT, text);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(intent);// Intent.createChooser(intent, title)
+	}
+	
+	/**
+	 * 获取手机唯一码
+	 * @param context
+	 * @return
+	 */
+	public static String getUUID(Context context) {
+		final TelephonyManager tm = (TelephonyManager) context
+				.getSystemService(Context.TELEPHONY_SERVICE);
+		final String tmDevice, tmSerial, androidId;
+		if (CommonUtil.checkPermission(context,
+				android.Manifest.permission.READ_PHONE_STATE)) {
+			tmDevice = "-" + tm.getDeviceId();
+		} else {
+			tmDevice = "";
+		}
+		androidId = ""
+				+ Settings.Secure.getString(context.getContentResolver(),
+						Settings.Secure.ANDROID_ID);
+		return tmDevice + androidId;
 	}
 }

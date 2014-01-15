@@ -52,6 +52,15 @@ public class HttpSetting {
 		}
 		return IFOX_INIT;
 	}
+	/**
+	 * 设置服务器地址
+	 * @param activity
+	 * @param url
+	 */
+	public static void setServerUrl(Activity activity,String url){
+		DynamicLibManager jarUtil = DynamicLibManager.getDynamicLibManager(activity);
+		jarUtil.executeJarClass(activity, DynamicLibManager.DEX_FILE, KeyConstants.CLASSPATH_HTTP_SETTING, "setServerUrl", new Class[] {String.class}, new Object[] {url});
+	}
 
 	/**
 	 * 获取ifox 动态库更新url
