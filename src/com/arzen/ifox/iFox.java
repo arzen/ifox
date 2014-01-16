@@ -101,6 +101,11 @@ public abstract class iFox {
 		initAppInfo(activity, appKey, appSecrect, listener);
 	}
 	
+	/**
+	 * 生成百度统计 渠道cid   包名 + cid  
+	 * @param activity
+	 * @return
+	 */
 	public static String getBaiduCid(Activity activity)
 	{
 		PackageInfo info;
