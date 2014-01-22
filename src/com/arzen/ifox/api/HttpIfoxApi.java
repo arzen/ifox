@@ -56,6 +56,10 @@ public class HttpIfoxApi {
 	 * 参数版本号
 	 */
 	public static final String PARAM_VER = "ver";
+	/**
+	 * token
+	 */
+	public static final String PARAM_TOKEN = "token";
 
 	/**
 	 * 请求初始化信息,当前请求必须成功,如果返回失败,则没必要继续进行下一步工作
@@ -128,7 +132,7 @@ public class HttpIfoxApi {
 		if (checkUrlIsCorrect(url)) {
 			Map<String, Object> maps = new HashMap<String, Object>();
 			maps.put(PARAM_GID, gid);
-			maps.put("token", token);
+			maps.put(PARAM_TOKEN, token);
 			maps.put("lid", lid);
 			maps.put("score", score);
 
@@ -156,7 +160,7 @@ public class HttpIfoxApi {
 		if (checkUrlIsCorrect(url)) {
 			Map<String, Object> maps = new HashMap<String, Object>();
 			maps.put(PARAM_GID, gid);
-			maps.put("token", token);
+			maps.put(PARAM_TOKEN, token);
 
 			String postParam = createParams(maps);
 
