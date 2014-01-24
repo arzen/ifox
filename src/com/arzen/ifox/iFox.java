@@ -24,6 +24,7 @@ import com.arzen.ifox.api.HttpIfoxApi;
 import com.arzen.ifox.api.HttpSetting;
 import com.arzen.ifox.bean.CommitScore;
 import com.arzen.ifox.bean.DynamicUpdate;
+import com.arzen.ifox.bean.Init.InitData;
 import com.arzen.ifox.bean.Share;
 import com.arzen.ifox.bean.DynamicUpdate.DynamicData;
 import com.arzen.ifox.bean.Init;
@@ -158,22 +159,7 @@ public abstract class iFox {
 									Init init = (Init) result;
 									// 如果返回成功
 									if (init.getCode() == HttpSetting.RESULT_CODE_OK) {
-										// 初始化dex resource资源
-										DynamicLibManager.initDexResource(activity);
-										// 设置当前游戏id
-										String gid = init.getData().getGid();
-										// 保存当前gid
-										UserSetting.saveData(activity, gid, System.currentTimeMillis(), init.getData().getAlipay_notify_url());
-
-										if (DynamicLibManager.getDynamicLibManager(activity) != null) {
-											// 检查动态库是否有更新
-											checkUpdate(activity, gid, getChannelId(activity), DynamicLibManager.getDynamicLibManager(activity).getmVertionCode());
-										}
-										// 获得当前token
-										String token = UserSetting.getToken(activity.getApplicationContext());
-										// 获取分享模版
-										madeShareMsg(activity, token, gid, false);
-
+										disposeInit(activity, init);
 										cb.onSuccess();
 									} else {
 										cb.onFail(init.getMsg());
@@ -194,7 +180,29 @@ public abstract class iFox {
 			DynamicLibManager.initDexResource(activity);
 			cb.onSuccess();
 		}
+	}
+	/**
+	 * 处理初始化
+	 * @param activity
+	 * @param init
+	 */
+	private static void disposeInit(Activity activity, Init init)
+	{
+		// 初始化dex resource资源
+		DynamicLibManager.initDexResource(activity);
+		// 设置当前游戏id
+		String gid = init.getData().getGid();
+		// 保存当前gid
+		UserSetting.saveData(activity, gid, System.currentTimeMillis(), init.getData().getAlipay_notify_url());
 
+		if (DynamicLibManager.getDynamicLibManager(activity) != null) {
+			// 检查动态库是否有更新
+			checkUpdate(activity, gid, getChannelId(activity), DynamicLibManager.getDynamicLibManager(activity).getmVertionCode());
+		}
+		// 获得当前token
+		String token = UserSetting.getToken(activity.getApplicationContext());
+		// 获取分享模版
+		madeShareMsg(activity, token, gid, false);
 	}
 
 	/**
@@ -220,10 +228,7 @@ public abstract class iFox {
 					if (dynamicUpdate.getCode() == HttpSetting.RESULT_CODE_OK) {
 						DynamicData data = dynamicUpdate.getData();
 						String latest = data.getLatest();
-						if (latest.equals("false") && !data.getUrl().equals("")) { // false
-																					// 有新版本
-																					// true
-																					// 没新版本
+						if (latest.equals("false") && !data.getUrl().equals("")) { // false 有新版本 true 没新版本
 							DynamicLibUtils.downloadNewDynamicLib(activity.getApplicationContext(), data.getUrl()); // 下载动态库
 						}
 					} else {

@@ -227,9 +227,8 @@ public class CommonActivity extends BaseActivity {
 
 	/**
 	 * 银联支付
-	 * 
-	 * @param tn
-	 *            流水号
+	 * 备注:为什么需要通过广播的方式传到main调用银联支付,因为银联的jar很大,而动态更新的方式,如果放在lib下做,需要添加两份jar,所以用广播的方式,发送到这边启动
+	 * @param tn 流水号
 	 */
 	public void toUnionpay(String tn) {
 		UPPayAssistEx.startPayByJAR(this, PayActivity.class, null, null, tn, "00"); // 00 正式 01测试
@@ -239,7 +238,6 @@ public class CommonActivity extends BaseActivity {
 	 * 跳转微派支付
 	 */
 	public void toWayPay() {
-
 //		// 检测微派支付有没更新
 //		new ApkUpdate(this, new ApkUpdateCallback() {
 //			@Override
