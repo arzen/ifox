@@ -105,7 +105,7 @@ public class HttpSetting {
 	 * @return
 	 */
 	public static String getShareUrl(Activity activity) {
-		if (IFOX_COMMIT_SCORE_URL == null || IFOX_COMMIT_SCORE_URL.equals("")) {
+		if (IFOX_SHARE_URL == null || IFOX_SHARE_URL.equals("")) {
 			DynamicLibManager jarUtil = DynamicLibManager.getDynamicLibManager(activity);
 			Object result = null;
 			// 获取服务器地址
@@ -114,10 +114,10 @@ public class HttpSetting {
 					KeyConstants.CLASSPATH_HTTP_SETTING, 
 					"getShareUrl", new Class[] {}, new Object[] {});
 			if (result != null && result instanceof String) {
-				IFOX_COMMIT_SCORE_URL = (String) result;
+				IFOX_SHARE_URL = (String) result;
 			}
 		}
-		return IFOX_COMMIT_SCORE_URL;
+		return IFOX_SHARE_URL;
 	}
 
 }
