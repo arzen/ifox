@@ -26,7 +26,7 @@ public class DownloadManager implements Serializable {
 	 */
 	private static final String DOWNLOAD_DECRTOY = "download";
 
-	public static List<DownloadTaskManager> mDownloadTaskManagers = new ArrayList<DownloadTaskManager>();
+	public static List<DownloadBean> mDownloadBeans = new ArrayList<DownloadBean>();
 
 	private DownloadTaskManager mDownloadTaskManager;
 
@@ -44,10 +44,9 @@ public class DownloadManager implements Serializable {
 		// notificationMrg = (NotificationManager)
 		// context.getSystemService(android.content.Context.NOTIFICATION_SERVICE);
 
-		for (int i = 0; i < mDownloadTaskManagers.size(); i++) {
-			DownloadTaskManager downloadTaskManager = mDownloadTaskManagers.get(i);
-			DownloadBean downloadBean = downloadTaskManager.getCurrentDownlaod();
-			int state = downloadTaskManager.getCurrentDownloadState();
+		for (int i = 0; i < mDownloadBeans.size(); i++) {
+			DownloadBean downloadBean = mDownloadBeans.get(i);
+//			int state = downloadTaskManager.getCurrentDownloadState();
 			if (downloadBean.downloadUrl.equals(downloadUrl)) {
 				MsgUtil.msg("已在下载队列", context);
 				return;
@@ -56,7 +55,6 @@ public class DownloadManager implements Serializable {
 
 		if (mDownloadTaskManager == null) {
 			mDownloadTaskManager = new DownloadTaskManager();
-			mDownloadTaskManagers.add(mDownloadTaskManager);
 		}
 
 		String fileName = MD5Util.getMD5String(downloadUrl);
@@ -72,6 +70,8 @@ public class DownloadManager implements Serializable {
 		// offset = downloadFile.length(); // 断点续传
 		// }
 		downloadBean.downloadOffset = offset;
+		
+		mDownloadBeans.add(downloadBean);
 
 		mDownloadTaskManager.addDownload(downloadBean);
 		mDownloadTaskManager.setOnDownloadListener(new OnDownloadListener() {

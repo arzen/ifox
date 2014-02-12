@@ -33,7 +33,7 @@ public class DownloadNotification {
 	};
 
 	private void initContentIntent() {
-		int icon = R.drawable.download_1;
+		int icon = android.R.drawable.stat_sys_download;
 		// Intent intent = new Intent(IntentAction.INTENT_BASE_ACTIVITY);
 		// intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
 		// Intent.FLAG_ACTIVITY_NEW_TASK);
