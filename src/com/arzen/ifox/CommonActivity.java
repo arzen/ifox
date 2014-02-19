@@ -1,5 +1,7 @@
 package com.arzen.ifox;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Random;
 
 import android.app.Activity;
@@ -14,7 +16,9 @@ import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.content.res.Resources.Theme;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.FrameLayout;
@@ -28,7 +32,6 @@ import com.arzen.ifox.setting.KeyConstants;
 import com.arzen.ifox.setting.UserSetting;
 import com.arzen.ifox.utils.DynamicLibManager;
 import com.arzen.ifox.utils.MsgUtil;
-import com.baidu.mobstat.StatService;
 import com.encore.libs.utils.Log;
 import com.unionpay.UPPayAssistEx;
 import com.unionpay.uppay.PayActivity;
@@ -57,6 +60,10 @@ public class CommonActivity extends BaseActivity {
 
 	// 参数,必须要要有需要加载的包名,否则抛出异常
 	private Bundle mBundle;
+	// 动态加载的实体类
+	private Object mDynamicInstance;
+	// 动态加载的类
+	private Class mDynamicClass;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +87,9 @@ public class CommonActivity extends BaseActivity {
 			throw new IllegalArgumentException("bundle or param packageName is null!");
 		}
 		// 加载动态库fragment
-		loadDynamicFragment();
+		// loadDynamicFragment();
+
+		loadDynamicClass();
 
 		registerReceiver(mBroadcastReceiver, new IntentFilter(KeyConstants.RECEIVER_RESULT_ACTION));
 		registerReceiver(mPayBroadcastReceiver, new IntentFilter(KeyConstants.RECEIVER_PAY_START_ACTION));
@@ -109,37 +118,144 @@ public class CommonActivity extends BaseActivity {
 	/**
 	 * 加载动态库Fragment并显示
 	 */
-	public void loadDynamicFragment() {
+	public void loadDynamicClass() {
 		try {
 			// 获取需要加载的fragment包名
 			String packageName = mBundle.getString(KeyConstants.KEY_PACKAGE_NAME);
-			// 加载fragment
-			Fragment f = (Fragment) getClassLoader().loadClass(packageName).newInstance();
-			if (f == null) {
-				MsgUtil.msg("load fragment class is null!", this);
+//			packageName = "com.arzen.iFoxLib.dynamic.LoginDynamic";
+
+			mDynamicClass = getClassLoader().loadClass(packageName);
+
+			if (mDynamicClass == null) {
+				MsgUtil.msg("load " + packageName + " class is null!", this);
+				finish();
 				return;
 			}
-			if (mBundle != null) {
-				f.setArguments(mBundle);
+
+			Constructor localConstructor = mDynamicClass.getConstructor(new Class[] {});
+			mDynamicInstance = localConstructor.newInstance(new Object[] {});
+
+			// 现反射onCreate方法
+			Method onCreateView = mDynamicClass.getDeclaredMethod("onCreateView", new Class[] { Activity.class });
+			onCreateView.setAccessible(true);
+			View view = (View) onCreateView.invoke(mDynamicInstance, new Object[] { this });
+
+			if (view != null) {
+				((FrameLayout) findViewById(KeyConstants.KEY_CONTAINER_ID)).addView(view); // 显示view
 			}
-			FragmentManager fm = getFragmentManager();
-			FragmentTransaction ft = fm.beginTransaction();
-			ft.replace(KeyConstants.KEY_CONTAINER_ID, f);
-			ft.commit();
-			fm.executePendingTransactions();
+
+			Method onCreate = mDynamicClass.getDeclaredMethod("onCreate", new Class[] { Activity.class, Bundle.class });
+			onCreate.setAccessible(true);
+			onCreate.invoke(mDynamicInstance, new Object[] { this, mBundle });
+
+			Method onActivityCreate = mDynamicClass.getDeclaredMethod("onActivityCreate", new Class[] {});
+			onActivityCreate.setAccessible(true);
+			onActivityCreate.invoke(mDynamicInstance, new Object[] {});
 		} catch (Exception e) {
 			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
 		}
 	}
 	
+
+//	/**
+//	 * 加载动态库Fragment并显示
+//	 */
+//	public void loadDynamicFragment() {
+//		try {
+//			// 获取需要加载的fragment包名
+//			String packageName = mBundle.getString(KeyConstants.KEY_PACKAGE_NAME);
+//			// 加载fragment
+//			Fragment f = (Fragment) getClassLoader().loadClass(packageName).newInstance();
+//			if (f == null) {
+//				MsgUtil.msg("load fragment class is null!", this);
+//				return;
+//			}
+//			if (mBundle != null) {
+//				f.setArguments(mBundle);
+//			}
+//			FragmentManager fm = getFragmentManager();
+//			FragmentTransaction ft = fm.beginTransaction();
+//			ft.replace(KeyConstants.KEY_CONTAINER_ID, f);
+//			ft.commit();
+//			fm.executePendingTransactions();
+//		} catch (Exception e) {
+//			Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+//		}
+//	}
+
 	@Override
-	public void onResume() {
-		super.onResume();
+	protected void onStart() {
+		super.onStart();
+		Method start;
+		try {
+			start = mDynamicClass.getMethod("onStart");
+			start.invoke(mDynamicInstance);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
+
 	@Override
-	public void onPause() {
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		Method resume;
+		try {
+			resume = mDynamicClass.getMethod("onResume");
+			resume.invoke(mDynamicInstance);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	protected void onPause() {
 		super.onPause();
+		Method pause;
+		try {
+			pause = mDynamicClass.getMethod("onPause");
+			pause.invoke(mDynamicInstance);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		try {
+			Method stop = mDynamicClass.getMethod("onStop");
+			stop.invoke(mDynamicInstance);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		try {
+			Method des = mDynamicClass.getMethod("onDestroy");
+			des.invoke(mDynamicInstance);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		try {
+			unregisterReceiver(mBroadcastReceiver);
+			mBroadcastReceiver = null;
+
+			unregisterReceiver(mPayBroadcastReceiver);
+			mPayBroadcastReceiver = null;
+
+			unregisterReceiver(mDownloadBroadcastReceiver);
+			mDownloadBroadcastReceiver = null;
+		} catch (Exception e) {
+		}
 	}
 
 	@Override
@@ -209,8 +325,8 @@ public class CommonActivity extends BaseActivity {
 			}
 		}
 	};
-	
-	public BroadcastReceiver mDownloadBroadcastReceiver = new BroadcastReceiver(){
+
+	public BroadcastReceiver mDownloadBroadcastReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			// TODO Auto-generated method stub
@@ -218,7 +334,7 @@ public class CommonActivity extends BaseActivity {
 				String downloadUrl = intent.getStringExtra("downloadUrl");
 				String gameName = intent.getStringExtra("gameName");
 				int id = intent.getIntExtra("id", new Random().nextInt(999999));
-				
+
 				DownloadManager downloadManager = new DownloadManager();
 				downloadManager.downloadFile(getApplicationContext(), downloadUrl, gameName, id);
 			}
@@ -226,28 +342,32 @@ public class CommonActivity extends BaseActivity {
 	};
 
 	/**
-	 * 银联支付
-	 * 备注:为什么需要通过广播的方式传到main调用银联支付,因为银联的jar很大,而动态更新的方式,如果放在lib下做,需要添加两份jar,所以用广播的方式,发送到这边启动
-	 * @param tn 流水号
+	 * 银联支付 备注:为什么需要通过广播的方式传到main调用银联支付,因为银联的jar很大,而动态更新的方式,如果放在lib下做,需要添加两份jar,
+	 * 所以用广播的方式,发送到这边启动
+	 * 
+	 * @param tn
+	 *            流水号
 	 */
 	public void toUnionpay(String tn) {
-		UPPayAssistEx.startPayByJAR(this, PayActivity.class, null, null, tn, "00"); // 00 正式 01测试
+		UPPayAssistEx.startPayByJAR(this, PayActivity.class, null, null, tn, "00"); // 00
+																					// 正式
+																					// 01测试
 	}
 
 	/**
 	 * 跳转微派支付
 	 */
 	public void toWayPay() {
-//		// 检测微派支付有没更新
-//		new ApkUpdate(this, new ApkUpdateCallback() {
-//			@Override
-//			public void launch(Map<String, String> arg0) {
-//				// TODO Auto-generated method stub
-//					WayPay mWayPay = new WayPay(mBundle);
-//				Log.d("PayFragment", "way pay");
-//				mWayPay.toPay(CommonActivity.this, "0001");
-//			}
-//		});
+		// // 检测微派支付有没更新
+		// new ApkUpdate(this, new ApkUpdateCallback() {
+		// @Override
+		// public void launch(Map<String, String> arg0) {
+		// // TODO Auto-generated method stub
+		// WayPay mWayPay = new WayPay(mBundle);
+		// Log.d("PayFragment", "way pay");
+		// mWayPay.toPay(CommonActivity.this, "0001");
+		// }
+		// });
 	}
 
 	/**
@@ -307,7 +427,8 @@ public class CommonActivity extends BaseActivity {
 		String result = bundle.getString(KeyConstants.INTENT_KEY_RESULT);
 		String msg = bundle.getString(KeyConstants.INTENT_KEY_MSG);
 
-//		Log.d(TAG, "mPayResultReceiver (result:" + result + " msg:" + msg + ")");
+		// Log.d(TAG, "mPayResultReceiver (result:" + result + " msg:" + msg +
+		// ")");
 
 		if (result == null) {
 			return;
@@ -326,23 +447,6 @@ public class CommonActivity extends BaseActivity {
 	}
 
 	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-		try {
-			unregisterReceiver(mBroadcastReceiver);
-			mBroadcastReceiver = null;
-
-			unregisterReceiver(mPayBroadcastReceiver);
-			mPayBroadcastReceiver = null;
-			
-			unregisterReceiver(mDownloadBroadcastReceiver);
-			mDownloadBroadcastReceiver = null;
-		} catch (Exception e) {
-		}
-	}
-
-	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
 		/*************************************************
@@ -350,7 +454,7 @@ public class CommonActivity extends BaseActivity {
 		 * 步骤3：处理银联手机支付控件返回的支付结果
 		 * 
 		 ************************************************/
-		if(requestCode == 10){
+		if (requestCode == 10) {
 			if (data == null) {
 				return;
 			}
@@ -363,7 +467,12 @@ public class CommonActivity extends BaseActivity {
 			intent.putExtra(KeyConstants.INTENT_KEY_RESULT, result);
 			sendBroadcast(intent);
 		}
-		
+		try {
+			Method stop = mDynamicClass.getMethod("onActivityResult",new Class[] { int.class, int.class,Intent.class });
+			stop.invoke(mDynamicInstance,new Object[] { requestCode, resultCode,data});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

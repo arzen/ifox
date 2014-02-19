@@ -10,20 +10,20 @@ public class KeyConstants {
 	/**
 	 * 支付页面
 	 */
-	public static final String PKG_PAY_FRAGMENT = "com.arzen.iFoxLib.fragment.PayFragment";
+	public static final String PKG_PAY_FRAGMENT = "com.arzen.iFoxLib.dynamic.PayDynamic";
 	/**
 	 * 登录页面
 	 */
-	public static final String PKG_LOGIN_FRAGMENT = "com.arzen.iFoxLib.fragment.LoginFragment";
+	public static final String PKG_LOGIN_FRAGMENT = "com.arzen.iFoxLib.dynamic.LoginDynamic";
 	/**
 	 * 修改密码页面
 	 */
-	public static final String PKG_CHANGE_PASSWORD_FRAGMENT = "com.arzen.iFoxLib.fragment.ChangePasswordFragment";
+	public static final String PKG_CHANGE_PASSWORD_FRAGMENT = "com.arzen.iFoxLib.dynamic.ChangePasswordDynamic";
 
 	/**
 	 * 排行榜页面
 	 */
-	public static final String PKG_TOP_FRAGMENT = "com.arzen.iFoxLib.fragment.TopFragment";
+	public static final String PKG_TOP_FRAGMENT = "com.arzen.iFoxLib.dynamic.TopDynamic";
 
 	/**
 	 * 公用activty action

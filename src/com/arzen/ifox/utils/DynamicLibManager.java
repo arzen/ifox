@@ -204,6 +204,9 @@ public class DynamicLibManager {
 		if (FileUtil.isFileExit(apkFile)) {
 			PackageManager pm = this.mContext.getPackageManager();
 			PackageInfo packageInfo = pm.getPackageArchiveInfo(apkFile, PackageManager.GET_ACTIVITIES);
+			if(packageInfo == null){
+				return "0";
+			}
 			versionCode = String.valueOf(packageInfo.versionCode);
 		}
 		return versionCode;
