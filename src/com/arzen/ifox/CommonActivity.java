@@ -32,6 +32,7 @@ import com.arzen.ifox.setting.KeyConstants;
 import com.arzen.ifox.setting.UserSetting;
 import com.arzen.ifox.utils.DynamicLibManager;
 import com.arzen.ifox.utils.MsgUtil;
+import com.baidu.mobstat.StatService;
 import com.encore.libs.utils.Log;
 import com.unionpay.UPPayAssistEx;
 import com.unionpay.uppay.PayActivity;
@@ -188,8 +189,9 @@ public class CommonActivity extends BaseActivity {
 		super.onStart();
 		Method start;
 		try {
-			start = mDynamicClass.getMethod("onStart");
-			start.invoke(mDynamicInstance);
+			start = mDynamicClass.getMethod("onStart", new Class[] {});
+			start.setAccessible(true);
+			start.invoke(mDynamicInstance, new Object[] {});
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -202,8 +204,11 @@ public class CommonActivity extends BaseActivity {
 		super.onResume();
 		Method resume;
 		try {
-			resume = mDynamicClass.getMethod("onResume");
-			resume.invoke(mDynamicInstance);
+			StatService.onResume(this);
+			
+			resume = mDynamicClass.getMethod("onResume", new Class[] {});
+			resume.setAccessible(true);
+			resume.invoke(mDynamicInstance, new Object[] {});
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -215,8 +220,10 @@ public class CommonActivity extends BaseActivity {
 		super.onPause();
 		Method pause;
 		try {
-			pause = mDynamicClass.getMethod("onPause");
-			pause.invoke(mDynamicInstance);
+			StatService.onPause(this);
+			pause = mDynamicClass.getMethod("onPause", new Class[] {});
+			pause.setAccessible(true);
+			pause.invoke(mDynamicInstance, new Object[] {});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -226,8 +233,12 @@ public class CommonActivity extends BaseActivity {
 	protected void onStop() {
 		super.onStop();
 		try {
-			Method stop = mDynamicClass.getMethod("onStop");
-			stop.invoke(mDynamicInstance);
+//			Method stop = mDynamicClass.getMethod("onStop");
+//			stop.invoke(mDynamicInstance);
+			
+			Method stop = mDynamicClass.getMethod("onStop", new Class[] {});
+			stop.setAccessible(true);
+			stop.invoke(mDynamicInstance, new Object[] {});
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -238,8 +249,10 @@ public class CommonActivity extends BaseActivity {
 		// TODO Auto-generated method stub
 		super.onDestroy();
 		try {
-			Method des = mDynamicClass.getMethod("onDestroy");
-			des.invoke(mDynamicInstance);
+			Method des = mDynamicClass.getMethod("onDestroy", new Class[] {});
+			des.setAccessible(true);
+			des.invoke(mDynamicInstance, new Object[] {});
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
