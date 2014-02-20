@@ -109,7 +109,13 @@ public class DynamicLibManager {
 			mDynamicFile = new File(DynamicLibUtils.getDynamicFilePath(activity.getApplicationContext()));
 		//如果本地存在动态库
 		if(mDynamicFile.exists()){
-			File assetFile = new File(Environment.getExternalStorageDirectory().getAbsoluteFile().toString() + "/temp.cc");
+			File assetFile = null;
+			if(mDynamicFile.getAbsolutePath().startsWith(Environment.getExternalStorageDirectory().getAbsoluteFile().toString())){
+				assetFile = new File(Environment.getExternalStorageDirectory().getAbsoluteFile().toString() + "/temp.apk");
+			}else{
+				assetFile = new File(activity.getFilesDir() + "/temp.apk");
+			}
+			
 			try {// 输出apk到 命名空间目录下
 				InputStream ins = activity.getAssets().open(jarName);
 				byte[] bytes = new byte[ins.available()];
@@ -124,7 +130,7 @@ public class DynamicLibManager {
 				// TODO: handle exception
 				e.printStackTrace();
 			}
-			
+			//对比本地与asset文件的版本号
 			int sdCardVersion =  Integer.parseInt(getApkVersionCode(mDynamicFile.getAbsolutePath().toString()));
 			int assetVersion = Integer.parseInt(getApkVersionCode(assetFile.getAbsolutePath().toString()));
 			if(assetVersion <= sdCardVersion){
